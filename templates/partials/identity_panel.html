@@ -1,0 +1,21 @@
+<div class="identity-panel" data-identity-tabs>
+  <nav class="identity-tabs" data-identity-tablist aria-label="Información de FR BEISSHOP">
+    <a class="identity-tab" id="identity-tab-mission" href="#mission-panel" data-identity-tab="mission" aria-controls="mission-panel">Misión</a>
+    <a class="identity-tab" id="identity-tab-vision" href="#vision-panel" data-identity-tab="vision" aria-controls="vision-panel">Visión</a>
+    <a class="identity-tab" id="identity-tab-ethics" href="#ethics-panel" data-identity-tab="ethics" aria-controls="ethics-panel">Código ético</a>
+  </nav>
+  <section class="identity-tab-panel" id="mission-panel" data-identity-panel="mission" aria-labelledby="identity-tab-mission" tabindex="0">
+    <h2 id="mission-title">Nuestra misión</h2>
+    <p class="identity-copy">{% include 'partials/mission_text.html' %}</p>
+  </section>
+  <section class="identity-tab-panel" id="vision-panel" data-identity-panel="vision" aria-labelledby="identity-tab-vision" tabindex="0">
+    <h2 id="vision-title">Nuestra visión</h2>
+    <p class="identity-copy">{% include 'partials/vision_text.html' %}</p>
+  </section>
+  <section class="identity-tab-panel" id="ethics-panel" data-identity-panel="ethics" aria-labelledby="identity-tab-ethics" tabindex="0">
+    <h2 id="ethics-title">Código ético</h2>
+    <p class="identity-copy">Estos principios orientan nuestras decisiones y el trato con clientes, proveedores y la comunidad deportiva.</p>
+    {% include 'partials/ethics_list.html' %}
+  </section>
+</div>
+

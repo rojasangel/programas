@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}Tu carrito | FR BEISSHOP{% endblock %}
+{% block content %}
+<section class="cart-page section-wrap">
+  <p class="eyebrow eyebrow-dark">FR BEISSHOP / PEDIDO</p>
+  <h1>Tu carrito</h1>
+  {% if items %}
+    <div class="cart-layout">
+      <section class="cart-items" aria-label="Productos en tu carrito">
+        <form action="{{ url_for('update_cart') }}" method="post">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          {% for item in items %}
+            {% set item_discount = ((discount * item.subtotal / total) if total and discount else 0) %}
+            {% set item_final_total = item.subtotal - item_discount %}
+            {% set item_unit_final = (item_final_total / item.quantity) if item.quantity else item.product.price %}
+            <article class="cart-item">
+              <div class="cart-item-media">
+                <img src="{{ url_for('static', filename='uploads/custom-bats/' ~ item.custom_image) if item.custom_image else item.product.image }}" alt="{{ 'Vista previa de ' if item.custom_image else 'Imagen de ' }}{{ item.product.name }}" onerror="this.onerror=null;this.src='{{ url_for('static', filename='logo.png') }}';">
+              </div>
+              <div class="cart-item-info">
+                <span class="product-meta">{{ item.product.category }}{% if item.product.section %} · {{ item.product.section|section_label }}{% endif %}</span>
+                <h2>{{ item.product.name }}</h2>
+                {% set item_sku = item.product.get('sku') or ('FR-' ~ item.product.id) %}
+                <div class="cart-item-specs">
+                  {% if item.customizations %}
+                    {% for label, value in item.customizations.items() %}<span><b>{{ label }}:</b> {{ value }}</span>{% endfor %}
+                  {% endif %}
+                  <span><b>SKU:</b> {{ item_sku }}</span>
+                </div>
+                <span class="cart-stock{% if item.product.stock|default(0, true) <= 0 %} is-out{% endif %}"><i aria-hidden="true"></i>{% if item.product.stock|default(0, true) > 0 %}Disponible{% else %}Agotado{% endif %}</span>
+                <div class="cart-item-actions">
+                  <div class="cart-quantity" aria-label="Cantidad de {{ item.product.name }}">
+                    <button type="button" data-quantity-step="-1" aria-label="Disminuir cantidad">−</button>
+                    <input type="number" min="0" max="99" name="cantidad-{{ item.line_id }}" value="{{ item.quantity }}" aria-label="Cantidad">
+                    <button type="button" data-quantity-step="1" aria-label="Aumentar cantidad">+</button>
+                  </div>
+                  <button class="cart-remove" type="submit" name="quitar-{{ item.line_id }}" value="1">Quitar art&iacute;culo</button>
+                </div>
+              </div>
+              <div class="cart-item-pricing">
+                <div class="cart-price-row"><span>Precio del art&iacute;culo</span><strong>{{ item.product.price|mxn }} MXN</strong></div>
+                {% if item_discount > 0 %}<div class="cart-price-row cart-price-sale"><span>Descuento</span><strong>-{{ item_discount|mxn }} MXN</strong></div>{% endif %}
+                <div class="cart-price-row cart-price-subtotal"><span>Subtotal</span><strong>{{ item_final_total|mxn }} MXN</strong></div>
+                {% if item.quantity > 1 %}<small>{{ item_unit_final|mxn }} MXN por unidad</small>{% endif %}
+              </div>
+            </article>
+          {% endfor %}
+          <button class="text-button cart-update-button" type="submit">Actualizar carrito</button>
+        </form>
+      </section>
+
+      <aside class="order-panel cart-summary-panel">
+        <div class="order-total cart-summary-total">
+          <span>Total del pedido</span>
+          <strong>{{ (total - discount)|mxn }} MXN</strong>
+        </div>
+        <form class="coupon-form" action="{{ url_for('apply_coupon') }}" method="post">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <label>Cupón de descuento
+            <input name="codigo" value="{{ coupon.code if coupon else '' }}" maxlength="32" placeholder="Ej. FR10">
+          </label>
+          <button class="button button-light" type="submit">{{ 'Quitar cupón' if coupon else 'Aplicar cupón' }}</button>
+        </form>
+        {% if coupon and discount > 0 %}
+          <div class="order-total order-discount">
+            <span>Descuento ({{ coupon.code }})</span>
+            <strong>-{{ discount|mxn }} MXN</strong>
+          </div>
+        {% endif %}
+        <a class="button button-dark button-full cart-checkout-button" href="{{ url_for('checkout') }}">Proceder al pago <span aria-hidden="true">→</span></a>
+      </aside>
+    </div>
+  {% else %}
+    <div class="empty-cart">
+      <span aria-hidden="true">∅</span>
+      <h2>Tu carrito está esperando la primera jugada.</h2>
+      <p>Explora el catálogo y agrega el equipo que necesitas.</p>
+      <a class="button button-dark" href="{{ url_for('index') }}">Ir a la tienda <span aria-hidden="true">↗</span></a>
+    </div>
+  {% endif %}
+</section>
+<script>
+  document.querySelectorAll('[data-quantity-step]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const input = button.parentElement.querySelector('input[type="number"]');
+      if (!input) return;
+      const step = Number(button.dataset.quantityStep || 0);
+      const current = Number(input.value || 0);
+      const next = Math.max(Number(input.min || 0), Math.min(Number(input.max || 99), current + step));
+      input.value = next;
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+  });
+</script>
+{% endblock %}
+

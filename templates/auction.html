@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block title %}Subasta | FR BEISSHOP{% endblock %}
+{% block content %}
+<section class="auction-page section-wrap">
+  <div class="auction-heading">
+    <p class="eyebrow eyebrow-dark">FR BEISSHOP / SUBASTA</p>
+    <h1>Subasta</h1>
+    <p>Encuentra oportunidades especiales en equipo para b&eacute;isbol y s&oacute;ftbol.</p>
+    <a class="auction-rules-link" href="{{ url_for('auction_rules') }}">Conoce las reglas para participar <span aria-hidden="true">&rarr;</span></a>
+  </div>
+  {% if whatsapp_enabled %}
+    <aside class="auction-whatsapp-cta">
+      <div>
+        <span class="auction-whatsapp-eyebrow">ATENCI&Oacute;N PERSONAL</span>
+        <strong>&iquest;Tienes dudas sobre una subasta?</strong>
+        <p>Escr&iacute;benos y te ayudamos con los lotes, las pujas o el pago.</p>
+      </div>
+      <a href="{{ whatsapp_url }}" target="_blank" rel="noopener noreferrer" aria-label="Abrir WhatsApp al {{ whatsapp_display_number }}">
+        <span>WhatsApp</span>
+        <strong>{{ whatsapp_display_number }}</strong>
+        <span aria-hidden="true">&#8599;</span>
+      </a>
+    </aside>
+  {% endif %}
+  {% if auctions %}
+    <div class="auction-grid">
+      {% for auction in auctions %}
+        <article class="auction-card{% if auction.closed %} is-closed{% endif %}">
+          <div class="auction-card-image">
+            <img src="{{ auction.image }}" alt="{{ auction.name }}">
+          </div>
+          <div class="auction-card-body">
+            <p class="eyebrow eyebrow-dark">{% if auction.closed %}SUBASTA CERRADA{% else %}SUBASTA ACTIVA{% endif %}</p>
+            <h2>{{ auction.name }}</h2>
+            <p class="auction-card-description">{{ auction.description }}</p>
+            <div class="auction-card-meta">
+              <span>Precio inicial</span>
+              <strong>{{ auction.price|mxn }} MXN</strong>
+            </div>
+            <div class="auction-card-timing" data-auction-countdown data-auction-deadline="{{ auction.ends_at }}">
+              <p class="auction-card-deadline">Finaliza: <time datetime="{{ auction.ends_at }}">{{ auction.ends_at|replace('T', ' ') }}</time></p>
+              <p class="auction-card-remaining" data-auction-remaining aria-live="polite">{% if auction.closed %}Subasta cerrada{% else %}Calculando tiempo restante&hellip;{% endif %}</p>
+            </div>
+            <div class="auction-card-bid">
+              <div class="auction-card-current-bid">
+                <span>Precio actual</span>
+                <strong>{{ auction.current_price|mxn }} MXN</strong>
+              </div>
+              <div class="auction-leader{% if auction.leader %} has-leader{% endif %}">
+                <span>{% if auction.closed and auction.offer_position > 0 %}Oferta vigente{% elif auction.closed %}Ganador{% else %}Va ganando{% endif %}</span>
+                {% if auction.leader %}
+                  <strong>{{ auction.leader.user_name }}</strong>
+                  <b>{{ auction.leader.amount|mxn }} MXN</b>
+                {% else %}
+                  <strong>{% if auction.closed %}Sin ganador disponible{% else %}Sin pujas todav&iacute;a{% endif %}</strong>
+                {% endif %}
+              </div>
+              {% if auction.closed %}
+                {% if current_user and auction.winner and auction.winner.user_id == session.get('user_id') %}
+                  {% if auction.offer_position > 0 %}
+                    <p class="auction-card-winner">El art&iacute;culo se ofrece ahora a la siguiente puja v&aacute;lida. Revisa tu correo: tienes 3 d&iacute;as para completar el pago.</p>
+                  {% else %}
+                    <p class="auction-card-winner">&iexcl;Ganaste esta subasta! Revisa tu correo para completar el pago dentro de 3 d&iacute;as.</p>
+                  {% endif %}
+                {% elif auction.offer_position > 0 %}
+                  <p class="auction-card-winner">La subasta est&aacute; cerrada y el art&iacute;culo se ofreci&oacute; al siguiente postor.</p>
+                {% else %}
+                  <p class="auction-card-winner">Subasta cerrada. El ganador recibir&aacute; instrucciones por correo cuando las notificaciones est&eacute;n configuradas.</p>
+                {% endif %}
+              {% elif current_user %}
+                <form class="auction-bid-form" action="{{ url_for('place_bid', auction_id=auction.id) }}" method="post">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <label>Tu puja (m&iacute;nimo {{ auction.minimum_bid|mxn }} MXN)
+                    <input type="number" name="puja" min="{{ auction.minimum_bid }}" step="0.01" value="{{ auction.minimum_bid }}" required>
+                  </label>
+                  <label class="legal-consent">
+                    <input type="checkbox" name="legal_accepted" value="1" required>
+                    <span>Acepto las <a href="{{ url_for('auction_rules') }}" target="_blank" rel="noopener">Reglas de subasta</a> y le&iacute; el <a href="{{ url_for('privacy_page') }}" target="_blank" rel="noopener">Aviso de privacidad</a>.</span>
+                  </label>
+                  <button class="button button-dark" type="submit">Pujar</button>
+                </form>
+              {% else %}
+                <p class="auction-card-login"><a href="{{ url_for('login', next=url_for('auction')) }}">Inicia sesi&oacute;n</a> para hacer una puja.</p>
+              {% endif %}
+            </div>
+            <div class="auction-bid-history auction-bid-history-visible">
+              <h3>Pujas realizadas <span>{{ auction.bid_count }}</span></h3>
+              {% if auction.bids %}
+                <ul>
+                  {% for bid in auction.bids %}
+                    <li>
+                      <span>
+                        <strong>{{ bid.user_name }}</strong>
+                        {% if bid.created_at %}<small>{{ bid.created_at }}</small>{% endif %}
+                      </span>
+                      <strong>{{ bid.amount|mxn }} MXN</strong>
+                    </li>
+                  {% endfor %}
+                </ul>
+              {% else %}
+                <p>A&uacute;n no hay pujas. S&eacute; el primero en participar.</p>
+              {% endif %}
+            </div>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="auction-empty">
+      <span class="auction-empty-mark" aria-hidden="true">&#9918;</span>
+      <div>
+        <p class="eyebrow eyebrow-dark">PR&Oacute;XIMAMENTE</p>
+        <h2>Las pr&oacute;ximas subastas aparecer&aacute;n aqu&iacute;</h2>
+        <p>Estamos preparando lotes, fechas y pujas para que encuentres tu pr&oacute;ximo art&iacute;culo FR BEISSHOP.</p>
+        <a class="button button-dark" href="{{ url_for('index') }}">Ver cat&aacute;logo</a>
+      </div>
+    </div>
+  {% endif %}
+</section>
+<script src="{{ url_for('static', filename='auction-countdown.js') }}" defer></script>
+{% endblock %}
+

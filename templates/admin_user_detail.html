@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Cliente | FR BEISSHOP{% endblock %}
+{% block content %}
+<section class="admin-page section-wrap">
+  <div class="admin-heading">
+    <div>
+      <p class="eyebrow eyebrow-dark">FR BEISSHOP / CLIENTES</p>
+      <h1>{{ user.name }}</h1>
+      <p class="admin-intro">{{ user.email }}{% if user.google_sub %} · Cuenta con Google{% endif %}</p>
+    </div>
+    <a class="admin-cancel" href="{{ url_for('admin_users') }}">Volver a clientes</a>
+  </div>
+  <div class="admin-report-grid">
+    <div class="admin-report-card"><span>Registro</span><strong>{{ user.created_at }}</strong><small>cuenta creada</small></div>
+    <div class="admin-report-card"><span>Pedidos</span><strong>{{ orders|length }}</strong><small>historial</small></div>
+    <div class="admin-report-card"><span>Total comprado</span><strong>{{ orders|sum(attribute='total')|mxn }}</strong><small>MXN</small></div>
+  </div>
+  {% if orders %}
+    <div class="admin-orders-list">
+      {% for order in orders %}
+        <article class="admin-order-card">
+          <div class="admin-order-heading"><div><p class="eyebrow eyebrow-dark">PEDIDO #{{ order.id }}</p><h2>{{ order.created_at }}</h2><small>{{ order.city }}, {{ order.state }} · C.P. {{ order.postal_code }}</small></div><strong>{{ order.total|mxn }} MXN</strong></div>
+          <p class="admin-order-delivery">{{ order.status }} · {% if order.delivery_method == 'local' %}Entrega personal en Mexicali{% else %}Envío a domicilio{% endif %}{% if order.tracking_number %} · Guía {{ order.tracking_number }}{% endif %}</p>
+          <ul class="admin-order-lines">{% for line in order.lines %}<li><span>{{ line.quantity }} x {{ line.name }}</span><strong>{{ line.subtotal|mxn }} MXN</strong></li>{% endfor %}</ul>
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="admin-empty-state">Este cliente todavía no tiene pedidos.</p>
+  {% endif %}
+</section>
+{% endblock %}
+

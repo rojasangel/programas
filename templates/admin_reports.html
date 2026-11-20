@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Reportes | FR BEISSHOP{% endblock %}
+{% block content %}
+<section class="admin-page section-wrap">
+  <div class="admin-heading">
+    <div>
+      <p class="eyebrow eyebrow-dark">FR BEISSHOP / ADMINISTRACIÓN / REPORTES</p>
+      <h1>Reportes</h1>
+      <p class="admin-intro">Resumen de ventas, inventario, usuarios y subastas.</p>
+    </div>
+    <div class="admin-heading-actions">
+      <a class="admin-action" href="{{ url_for('export_orders') }}">Exportar pedidos CSV</a>
+      <a class="admin-action" href="{{ url_for('admin_backup') }}">Descargar respaldo</a>
+      <a class="admin-cancel" href="{{ url_for('admin_menu') }}">Volver al men&uacute;</a>
+    </div>
+  </div>
+  <div class="admin-report-grid">
+    <div class="admin-report-card"><span>Pedidos</span><strong>{{ total_orders }}</strong><small>{{ pending_orders }} pendientes</small></div>
+    <div class="admin-report-card"><span>Ventas registradas</span><strong>{{ revenue|mxn }}</strong><small>MXN</small></div>
+    <div class="admin-report-card"><span>Usuarios</span><strong>{{ user_count }}</strong><small>cuentas</small></div>
+    <div class="admin-report-card"><span>Inventario</span><strong>{{ total_stock }}</strong><small>unidades disponibles</small></div>
+    <div class="admin-report-card"><span>Subastas</span><strong>{{ auction_count }}</strong><small>{{ bid_count }} pujas</small></div>
+    <div class="admin-report-card"><span>Productos</span><strong>{{ total_products }}</strong><small>en catálogo</small></div>
+  </div>
+  {% if most_viewed %}
+    <div class="most-viewed-card">
+      <div><p class="eyebrow eyebrow-dark">PRODUCTO M&Aacute;S VISTO</p><h2>{{ most_viewed.name }}</h2></div>
+      <strong>{{ most_viewed.views|default(0) }} <small>vistas</small></strong>
+    </div>
+  {% endif %}
+  <section class="admin-activity-preview">
+    <div class="admin-dashboard-heading"><h2>Actividad reciente</h2><a class="admin-action" href="{{ url_for('admin_activity') }}">Ver historial completo</a></div>
+    {% if recent_activity %}
+      <div class="admin-activity-list">
+        {% for item in recent_activity %}<article class="admin-activity-row"><div><strong>{{ item.action }}</strong><span>{{ item.entity }}{% if item.entity_id %} #{{ item.entity_id }}{% endif %}</span></div><p>{{ item.detail }}</p><time>{{ item.created_at }}</time></article>{% endfor %}
+      </div>
+    {% else %}<p class="admin-empty-state">Todavía no hay cambios registrados.</p>{% endif %}
+  </section>
+</section>
+{% endblock %}
+

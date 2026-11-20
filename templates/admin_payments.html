@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}Pagos Stripe | FR BEISSHOP{% endblock %}
+{% block content %}
+<section class="admin-page section-wrap stripe-payments-page">
+  <div class="admin-heading">
+    <div>
+      <p class="eyebrow eyebrow-dark">FR BEISSHOP / PAGOS</p>
+      <h1>Pagos con Stripe</h1>
+      <p class="admin-intro">Consulta tus pagos en proceso, pagados y reembolsados.</p>
+    </div>
+    <a class="admin-cancel" href="{{ url_for('admin_menu') }}">Volver al menú</a>
+  </div>
+
+  {% if not stripe_enabled %}
+    <p class="admin-empty-state">Stripe no está disponible en este momento. Revisa la clave configurada.</p>
+  {% endif %}
+
+  {% macro payment_card(payment) %}
+    <article class="admin-order-card stripe-payment-card">
+      <div class="admin-order-heading">
+        <div>
+          <p class="eyebrow eyebrow-dark">PEDIDO #{{ payment.id }}</p>
+          <h2>{{ payment.customer_name }}</h2>
+          <small>{{ payment.created_at }} · {{ payment.customer_email }}</small>
+        </div>
+        <strong>{{ payment.total|mxn }} MXN</strong>
+      </div>
+      <div class="admin-order-delivery">
+        <strong class="stripe-payment-status stripe-payment-status--{{ payment.payment_group }}">{{ payment.payment_group_label }}</strong>
+        <span>Estado del pedido: {{ payment.status }}</span>
+        {% if payment.payment_intent %}<span>PaymentIntent: {{ payment.payment_intent }}</span>{% endif %}
+        {% if payment.refunded_at %}<span>Reembolsado: {{ payment.refunded_at }}</span>{% endif %}
+      </div>
+      {% if payment.status not in ['Reembolsado', 'Cancelado'] and payment.payment_group == 'paid' %}
+        <form class="admin-order-status" action="{{ url_for('refund_payment', order_id=payment.id) }}" method="post" onsubmit="return confirm('¿Crear un reembolso en Stripe para este pedido?');">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="button button-light" type="submit">Reembolsar pago</button>
+        </form>
+      {% elif payment.payment_group == 'processing' %}
+        <p class="stripe-payment-note">El pago sigue pendiente de confirmación en Stripe.</p>
+      {% else %}
+        <p class="stripe-payment-note">Este pago ya no puede reembolsarse desde este pedido.</p>
+      {% endif %}
+    </article>
+  {% endmacro %}
+
+  {% set sections = [
+    ('processing', 'En proceso', 'Pagos pendientes de confirmación en Stripe.'),
+    ('paid', 'Pagados', 'Pagos confirmados correctamente.'),
+    ('refunded', 'Reembolsados', 'Pagos devueltos al cliente.')
+  ] %}
+
+  {% if payments %}
+    <div class="stripe-payment-summary" aria-label="Resumen de pagos">
+      {% for group_key, group_label, group_description in sections %}
+        <button class="stripe-payment-summary-card stripe-payment-summary-card--{{ group_key }}" type="button" data-payment-filter="{{ group_key }}" aria-pressed="false">
+          <span>{{ group_label }}</span>
+          <strong>{{ payment_groups[group_key]|length }}</strong>
+          <small>{{ group_description }}</small>
+        </button>
+      {% endfor %}
+    </div>
+
+    <div class="stripe-payment-tabs" role="tablist" aria-label="Filtrar pagos">
+      <button class="stripe-payment-tab is-active" type="button" data-payment-filter="all" aria-pressed="true">Ver todos <span>{{ payments|length }}</span></button>
+      {% for group_key, group_label, group_description in sections %}
+        <button class="stripe-payment-tab" type="button" data-payment-filter="{{ group_key }}" aria-pressed="false">{{ group_label }} <span>{{ payment_groups[group_key]|length }}</span></button>
+      {% endfor %}
+    </div>
+
+    <div class="stripe-payment-sections">
+      {% for group_key, group_label, group_description in sections %}
+        {% if payment_groups[group_key] %}
+          <section class="stripe-payment-section" data-payment-panel="{{ group_key }}">
+            <div class="stripe-payment-section-heading">
+              <div>
+                <p class="eyebrow eyebrow-dark">{{ '%02d'|format(loop.index) }}</p>
+                <h2>{{ group_label }}</h2>
+                <p>{{ group_description }}</p>
+              </div>
+              <span>{{ payment_groups[group_key]|length }} pago{% if payment_groups[group_key]|length != 1 %}s{% endif %}</span>
+            </div>
+            <div class="admin-orders-list">
+              {% for payment in payment_groups[group_key] %}{{ payment_card(payment) }}{% endfor %}
+            </div>
+          </section>
+        {% endif %}
+      {% endfor %}
+    </div>
+  {% elif stripe_enabled %}
+    <p class="admin-empty-state">Todavía no hay pedidos pagados con Stripe.</p>
+  {% endif %}
+</section>
+<script>
+  (() => {
+    const controls = [...document.querySelectorAll('[data-payment-filter]')];
+    const panels = [...document.querySelectorAll('[data-payment-panel]')];
+    if (!controls.length || !panels.length) return;
+    const setFilter = (filter) => {
+      controls.forEach((control) => {
+        const isActive = control.dataset.paymentFilter === filter;
+        control.classList.toggle('is-active', isActive);
+        control.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+      });
+      panels.forEach((panel) => {
+        panel.hidden = filter !== 'all' && panel.dataset.paymentPanel !== filter;
+      });
+    };
+    controls.forEach((control) => control.addEventListener('click', () => setFilter(control.dataset.paymentFilter)));
+  })();
+</script>
+{% endblock %}
+

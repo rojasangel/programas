@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Promociones | FR BEISSHOP{% endblock %}
+{% block content %}
+<section class="admin-page section-wrap">
+  <div class="admin-heading"><div><p class="eyebrow eyebrow-dark">FR BEISSHOP / PROMOCIONES</p><h1>Cupones</h1><p class="admin-intro">Crea descuentos para aplicarlos en el carrito antes de pagar con Stripe.</p></div><a class="admin-cancel" href="{{ url_for('admin_menu') }}">Volver al menú</a></div>
+  <form class="admin-form" method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="admin-fields">
+      <label>Código<input name="codigo" maxlength="32" pattern="[A-Za-z0-9_-]{3,32}" placeholder="FR10" required></label>
+      <label>Tipo<select name="tipo"><option value="percent">Porcentaje</option><option value="fixed">Cantidad fija</option></select></label>
+      <label>Valor<input name="valor" type="number" min="0.01" step="0.01" placeholder="10" required></label>
+      <label>Límite de usos<input name="limite" type="number" min="0" step="1" value="0"><span>0 = sin límite</span></label>
+      <label>Inicia<input name="inicia" type="date"></label>
+      <label>Termina<input name="termina" type="date"></label>
+    </div>
+    <button class="button button-dark" type="submit">Crear cupón</button>
+  </form>
+  {% if coupons %}<div class="admin-list"><div class="section-heading"><h2>Cupones creados</h2><span class="result-count">{{ coupons|length }}</span></div>{% for coupon in coupons %}<div class="admin-product-row coupon-row"><strong>{{ coupon.code }}</strong><span>{% if coupon.kind == 'percent' %}{{ coupon.value|round(2) }}%{% else %}{{ coupon.value|mxn }} MXN{% endif %}</span><span>{% if coupon.active %}Activo{% else %}Inactivo{% endif %}</span><span>{{ coupon.used_count }} usos{% if coupon.usage_limit %} / {{ coupon.usage_limit }}{% endif %}</span><span>{{ coupon.starts_at or 'Ahora' }}{% if coupon.expires_at %} → {{ coupon.expires_at }}{% endif %}</span><span class="admin-product-actions"><form method="post" action="{{ url_for('toggle_coupon', coupon_id=coupon.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="admin-action" type="submit">{{ 'Desactivar' if coupon.active else 'Activar' }}</button></form><form method="post" action="{{ url_for('delete_coupon', coupon_id=coupon.id) }}" onsubmit="return confirm('¿Eliminar este cupón?');"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="admin-action admin-delete" type="submit">Eliminar</button></form></span></div>{% endfor %}</div>{% else %}<p class="admin-empty-state">Todavía no hay cupones creados.</p>{% endif %}
+</section>
+{% endblock %}
+

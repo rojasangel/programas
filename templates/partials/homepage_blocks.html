@@ -1,0 +1,56 @@
+{% macro home_style(b) -%}
+--home-text:{{ b.text_color }};--home-accent:{{ b.accent_color }};--home-bg:{{ b.background_color }};--home-align:{{ b.text_align }};--home-border:{{ b.border_color }};--home-radius:{{ b.panel_radius }}px;--home-padding:{{ b.panel_padding }}px;
+{%- endmacro %}
+{% macro text(b, field, tag='p', css='', placeholder='Escribe aquí') -%}
+{% if b[field] or homepage_editing %}<{{ tag }} class="{{ css }}" data-home-field="{{ field }}" data-placeholder="{{ placeholder }}">{{ b[field] }}</{{ tag }}>{% endif %}
+{%- endmacro %}
+{% macro action(b) -%}
+{% if b.button_label or homepage_editing %}<a class="home-content-action" href="{{ b.button_url or '#' }}"><span data-home-field="button_label" data-placeholder="Texto del botón">{{ b.button_label }}</span><span aria-hidden="true">→</span></a>{% endif %}
+{%- endmacro %}
+{% macro home_block(b, key) %}
+{% if b.enabled or homepage_editing %}
+{% if key == 'hero' %}
+<section data-home-block-key="hero" class="home-custom-hero home-designed home-font-{{ b.font_family }} home-hero-layout-{{ b.image_layout }} home-hero-size-{{ b.image_size }} home-hero-fit-{{ b.image_fit }}{% if b.images %} home-custom-hero-has-images{% endif %}{% if not b.enabled %} ve-disabled-block{% endif %}"
+ style="{{ home_style(b) }}--hero-text-color:{{ b.text_color }};--hero-accent-color:{{ b.accent_color }};--hero-image-x:{{ b.image_position_x }}%;--hero-image-y:{{ b.image_position_y }}%;--hero-image-zoom:{{ b.image_zoom }};--hero-image-left:{{ b.image_left }}%;--hero-image-top:{{ b.image_top }}%;--hero-image-width:{{ b.image_width }}%;--hero-copy-left:{{ b.copy_left }}%;--hero-copy-top:{{ b.copy_top }}%;--hero-copy-width:{{ b.copy_width }}%;--hero-canvas-height:{{ b.canvas_height }}px;" aria-labelledby="home-title">
+  <div class="home-hero-copy" data-home-hero-copy>
+    {{ text(b, 'eyebrow', css='home-hero-eyebrow', placeholder='Texto pequeño de arriba') }}
+    <h1 id="home-title"><span data-home-field="title" data-placeholder="Título de la portada">{{ b.title }}</span>{% if b.accent or homepage_editing %}<em data-home-field="accent" data-placeholder="Segunda línea destacada">{{ b.accent }}</em>{% endif %}</h1>
+    {{ text(b, 'description', css='home-hero-description', placeholder='Descripción de la portada') }}
+    {{ action(b) }}
+    {{ text(b, 'watermark', tag='div', css='home-hero-watermark', placeholder='Texto decorativo') }}
+  </div>
+  {% if b.images or homepage_editing %}
+  <div class="home-hero-media" data-home-hero-media data-home-gallery role="region" aria-label="Fotografías de portada">
+    <div class="home-hero-gallery" id="home-hero-images">
+      {% for image in b.images %}<img class="home-hero-slide{% if loop.first %} is-active{% endif %}" data-home-slide data-home-image-slot="hero:{{ image.id }}" src="{{ image.url }}" alt="{{ image.alt }}" loading="{{ 'eager' if loop.first else 'lazy' }}" decoding="async"{% if not loop.first %} hidden{% endif %}>{% else %}<button type="button" class="home-image-empty" data-home-add-image>＋ Agrega una foto</button>{% endfor %}
+    </div>
+    {% if b.images|length > 1 %}
+    <div class="home-gallery-controls" data-home-controls hidden>
+      <button type="button" data-home-prev aria-label="Ver foto anterior">←</button><div class="home-gallery-dots">
+      {% for image in b.images %}<button class="home-gallery-dot{% if loop.first %} is-active{% endif %}" type="button" data-home-slide-index="{{ loop.index0 }}" aria-label="Ver foto {{ loop.index }}" aria-current="{{ 'true' if loop.first else 'false' }}"></button>{% endfor %}
+      </div><button type="button" data-home-next aria-label="Ver foto siguiente">→</button><span class="home-gallery-status" data-home-status aria-live="polite"></span>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+</section>
+{% elif key == 'callout' %}
+<section data-home-block-key="{{ key }}" class="shipping-callout home-shipping-callout home-designed home-font-{{ b.font_family }}{% if not b.enabled %} ve-disabled-block{% endif %}" style="{{ home_style(b) }}">
+  <div class="shipping-stamp" aria-hidden="true">FR<br><span>MX</span></div>
+  <div>{{ text(b, 'eyebrow', css='eyebrow', placeholder='Subtítulo del mensaje final') }}{{ text(b, 'title', tag='h2', placeholder='Título del mensaje final') }}</div>
+  <div class="home-shipping-copy">{{ text(b, 'description', placeholder='Escribe tu mensaje') }}{{ action(b) }}</div>
+</section>
+{% elif key.startswith('announcement:') %}
+<article data-home-block-key="{{ key }}" class="home-announcement home-designed home-font-{{ b.font_family }} home-announcement-standalone section-wrap{% if b.image_url %} has-image{% endif %}{% if not b.enabled %} ve-disabled-block{% endif %}" style="{{ home_style(b) }}">
+  {% if b.image_url %}<img class="home-announcement-image" data-home-image-slot="{{ key }}" src="{{ b.image_url }}" alt="{{ b.image_alt or b.title }}" loading="lazy">{% elif homepage_editing %}<button type="button" class="home-image-empty" data-home-add-image>＋ Foto</button>{% endif %}
+  <div class="home-announcement-copy">{{ text(b, 'eyebrow', css='home-content-eyebrow', placeholder='Etiqueta del anuncio') }}{{ text(b, 'title', tag='h2', placeholder='Título del anuncio') }}{{ text(b, 'body', placeholder='Información del anuncio') }}{{ action(b) }}</div>
+</article>
+{% else %}
+<section data-home-block-key="{{ key }}" class="home-content-block section-wrap home-content-standalone home-designed home-font-{{ b.font_family }}{% if not b.image_url and not homepage_editing %} is-text-only{% endif %}{% if not b.enabled %} ve-disabled-block{% endif %}" style="{{ home_style(b) }}" id="home-section-{{ b.id }}">
+  <div>{{ text(b, 'eyebrow', css='home-content-eyebrow', placeholder='Subtítulo') }}{{ text(b, 'title', tag='h2', placeholder='Título de la sección') }}{{ text(b, 'body', css='home-content-body', placeholder='Escribe información para tus clientes') }}{{ action(b) }}</div>
+  {% if b.image_url %}<img class="home-content-image" data-home-image-slot="{{ key }}" src="{{ b.image_url }}" alt="{{ b.image_alt or b.title }}" loading="lazy">{% elif homepage_editing %}<button type="button" class="home-image-empty" data-home-add-image>＋ Agrega una foto</button>{% endif %}
+</section>
+{% endif %}
+{% endif %}
+{% endmacro %}
+

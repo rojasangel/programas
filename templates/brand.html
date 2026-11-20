@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Nuestra marca | FR BEISSHOP{% endblock %}
+{% block content %}
+{% if session.get('is_admin') %}
+<section class="brand-admin-controls section-wrap">
+  <div>
+    <p class="eyebrow eyebrow-dark">FR BEISSHOP / ADMINISTRACIÓN</p>
+    <h1>Administra Nuestra marca</h1>
+    <p>Selecciona los productos que quieras mostrar en esta sección.</p>
+  </div>
+  <a class="button button-dark" href="{{ url_for('admin_brand') }}">Agregar productos <span aria-hidden="true">→</span></a>
+</section>
+{% endif %}
+<section class="catalog section-wrap brand-products-page">
+  <div class="brand-intro-layout">
+    <header class="brand-intro">
+      <p class="eyebrow eyebrow-dark">FR BEISSHOP / NUESTRA MARCA</p>
+      <h1>Nuestra marca</h1>
+      <p class="brand-intro-lead">Conoce nuestra identidad y explora los productos que llevan el sello de FR BEISSHOP.</p>
+      <div class="brand-intro-actions">
+        {% if brand_products %}<a class="button button-dark" href="#productos-marca">Ver productos <span aria-hidden="true">↓</span></a>{% endif %}
+      </div>
+    </header>
+    <a class="brand-identity-entry" href="{{ url_for('about_page') }}">
+      <p class="eyebrow eyebrow-dark">CONOCE FR BEISSHOP</p>
+      <h2>Misión, visión y código ético</h2>
+      <p>Nuestro propósito, el futuro que queremos construir y los principios que guían nuestro trabajo.</p>
+      <span class="brand-identity-action">Abrir panel <span aria-hidden="true">→</span></span>
+    </a>
+  </div>
+  {% if brand_products %}
+  <div class="section-heading brand-products-heading" id="productos-marca" tabindex="-1">
+    <h2>Productos de nuestra marca</h2>
+    <span class="result-count">{{ brand_products|length }} <small>{{ 'PRODUCTO' if brand_products|length == 1 else 'PRODUCTOS' }}</small></span>
+  </div>
+  <div class="product-grid">
+    {% for product in brand_products %}
+      <article class="product-card">
+        <a class="product-image{% if product.image == '/static/bat-transition.png' %} product-image-contain{% endif %}" href="{{ url_for('product_detail', product_id=product.id) }}">
+          <img src="{{ product.image }}" alt="{{ product.name }}" loading="lazy" onerror="this.onerror=null;this.src='{{ url_for('static', filename='logo.png') }}';">
+          <span class="product-tag">{{ product.tag }}</span>
+        </a>
+        <div class="product-info">
+          <div class="product-meta"><span>{{ product.category }}</span><span>FR-0{{ product.id }}</span></div>
+          <h3>{{ product.name }}</h3>
+          <p>{{ product.description }}</p>
+          <div class="product-buy">
+            <strong>{{ product.price|mxn }} <small>MXN</small></strong>
+            {% if product.get('stock', 0) <= 0 %}
+              <span class="product-out-label">Agotado</span>
+            {% elif product.get('price_on_request') %}
+              <span class="product-out-label">Precio por confirmar</span>
+            {% elif product.get('customizable') %}
+              <a class="add-button customize-link" href="{{ url_for('product_detail', product_id=product.id) }}" aria-label="Personalizar {{ product.name }}">Personalizar</a>
+            {% else %}
+              <form action="{{ url_for('add_to_cart', product_id=product.id) }}" method="post">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button class="add-button" type="submit" aria-label="Agregar {{ product.name }} al carrito">+</button>
+              </form>
+            {% endif %}
+          </div>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+  {% else %}
+    <div class="brand-empty"><p>Estamos preparando los próximos productos de nuestra marca.</p><a class="brand-about-link" href="{{ url_for('index') }}">Explorar la tienda <span aria-hidden="true">→</span></a></div>
+  {% endif %}
+</section>
+{% endblock %}
+

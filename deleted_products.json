@@ -1,0 +1,1130 @@
+[
+  {
+    "product": {
+      "id": 17,
+      "name": "Guante Rawlings color vino",
+      "category": "Guantes",
+      "section": "Béisbol",
+      "sections": [
+        "Béisbol"
+      ],
+      "price": 2500,
+      "description": "Guante Rawlings color vino, mostrado en una publicación de FR BEISSHOP.",
+      "tag": "Instagram",
+      "image": "/static/uploads/instagram_posts/post-01.png",
+      "views": 3,
+      "admin_added": true,
+      "stock": 10,
+      "active": true,
+      "package_weight_kg": 0.5,
+      "package_length_cm": 30,
+      "package_width_cm": 20,
+      "package_height_cm": 12,
+      "images": [
+        "/static/uploads/instagram_posts/post-01.png"
+      ],
+      "brand_featured": false
+    },
+    "deleted_at": "2026-11-03T15:25:43",
+    "expires_at": "2026-12-03T15:25:43"
+  },
+  {
+    "product": {
+      "id": 18,
+      "name": "Guante Rawlings rosa",
+      "category": "Guantes",
+      "section": "Softball",
+      "sections": [
+        "Softball"
+      ],
+      "price": 2050,
+      "description": "Guante Rawlings rosa, mostrado en una publicación de FR BEISSHOP.",
+      "tag": "Instagram",
+      "image": "/static/uploads/instagram_posts/post-02.png",
+      "views": 0,
+      "admin_added": true,
+      "stock": 10,
+      "active": true,
+      "package_weight_kg": 0.5,
+      "package_length_cm": 30,
+      "package_width_cm": 20,
+      "package_height_cm": 12,
+      "images": [
+        "/static/uploads/instagram_posts/post-02.png"
+      ],
+      "brand_featured": false
+    },
+    "deleted_at": "2026-11-03T15:25:47",
+    "expires_at": "2026-12-03T15:25:47"
+  },
+  {
+    "product": {
+      "id": 19,
+      "name": "Guantes de bateo Bruce Bolt verdes",
+      "category": "Guantes",
+      "section": "Béisbol",
+      "sections": [
+        "Béisbol"
+      ],
+      "price": 2150,
+      "description": "Guantes de bateo Bruce Bolt verdes, mostrado en una publicación de FR BEISSHOP.",
+      "tag": "Instagram",
+      "image": "/static/uploads/instagram_posts/post-03.png",
+      "views": 0,
+      "admin_added": true,
+      "stock": 10,
+      "active": true,
+      "package_weight_kg": 0.5,
+      "package_length_cm": 30,
+      "package_width_cm": 20,
+      "package_height_cm": 12,
+      "images": [
+        "/static/uploads/instagram_posts/post-03.png"
+      ],
+      "brand_featured": false
+    },
+    "deleted_at": "2026-11-03T15:25:50",
+    "expires_at": "2026-12-03T15:25:50"
+  },
+  {
+    "product": {
+      "id": 20,
+      "name": "Bat Louisville Slugger blanco y negro",
+      "category": "Bat",
+      "section": "Béisbol",
+      "sections": [
+        "Béisbol"
+      ],
+      "price": 2350,
+      "description": "Bat Louisville Slugger blanco y negro, mostrado en una publicación de FR BEISSHOP.",
+      "tag": "Instagram",
+      "image": "/static/uploads/instagram_posts/post-04.png",
+      "views": 2,
+      "admin_added": true,
+      "stock": 10,
+      "bat_measure": "33",
+      "bat_weight": "-3",
+      "active": true,
+      "package_weight_kg": 1.2,
+      "package_length_cm": 90,
+      "package_width_cm": 10,
+      "package_height_cm": 10,
+      "images": [
+        "/static/uploads/instagram_posts/post-04.png"
+      ],
+      "brand_featured": false
+    },
+    "deleted_at": "2026-11-03T15:25:54",
+    "expires_at": "2026-12-03T15:25:54"
+  },
+  {
+    "product": {
+      "id": 55,
+      "name": "Guante Mizuno color tan",
+      "category": "Guantes",
+      "section": "Béisbol",
+      "sections": [
+        "Béisbol"
+      ],
+      "price": 2750,
+      "description": "Guante Mizuno color tan, mostrado en una publicación de FR BEISSHOP.",
+      "tag": "Instagram",
+      "image": "/static/uploads/instagram_posts/post-39.png",
+      "views": 0,
+      "admin_added": true,
+      "stock": 10,
+      "active": true,
+      "package_weight_kg": 0.5,
+      "package_length_cm": 30,
+      "package_width_cm": 20,
+      "package_height_cm": 12,
+      "images": [
+        "/static/uploads/instagram_posts/post-39.png"
+      ],
+      "brand_featured": false
+    },
+    "deleted_at": "2026-11-03T15:26:03",
+    "expires_at": "2026-12-03T15:26:03"
+  },
+  {
+    "product": {
+      "id": 21,
+      "name": "Guante Rawlings azul cielo",
+      "category": "Guantes",
+      "section": "Béisbol",
+      "sections": [
+        "Béisbol"
+      ],
+      "price": 1600,
+      "description": "Guante Rawlings azul cielo, mostrado en una publicación de FR BEISSHOP.",
+      "tag": "Instagram",
+      "image": "/static/uploads/instagram_posts/post-05.png",
+      "views": 1,
+      "admin_added": true,
+      "stock": 10,
+      "active": true,
+      "package_weight_kg": 0.5,
+      "package_length_cm": 30,
+      "package_width_cm": 20,
+      "package_height_cm": 12,
+      "images": [
+        "/static/uploads/instagram_posts/post-05.png"
+      ],
+      "brand_featured": false
+    },
+    "deleted_at": "2026-11-03T15:26:07",
+    "expires_at": "2026-12-03T15:26:07"
+  },
+  {
+    "product": {
+      "id": 22,
+      "name": "Protector de mano Bruce Bolt",
+      "category": "Accesorios de entrenamiento",
+      "section": "Béisbol",
+      "sections": [
+        "Béisbol"
+      ],
+      "price": 1550,
+      "description": "Protector de mano Bruce Bolt, mostrado en una publicación de FR BEISSHOP.",
+      "tag": "Instagram",
+      "image": "/static/uploads/instagram_posts/post-06.png",
+      "views": 0,
+      "admin_added": true,
+      "stock": 10,
+      "active": true,
+      "package_weight_kg": 0.5,
+      "package_length_cm": 30,
+      "package_width_cm": 20,
+      "package_height_cm": 15,
+      "images": [
+        "/static/uploads/instagram_posts/post-06.png"
+      ],
+      "brand_featured": false
+    },
+    "deleted_at": "2026-11-03T15:26:10",
+    "expires_at": "2026-12-03T15:26:10"
+  },
+  {
+    "product": {
+      "id": 23,
+      "name": "Grip Lizard Skins camuflaje",
+      "category": "Grip",
+      "section": "Softball",
+      "sections": [
+        "Softball"
+      ],
+      "price": 400,
+      "description": "Grip Lizard Skins camuflaje, mostrado en una publicación de FR BEISSHOP.",
+      "tag": "Instagram",
+      "image": "/static/uploads/instagram_posts/post-07.png",
+      "views": 0,
+      "admin_added": true,
+      "stock": 10,
+      "grip_thickness": "1.1mm",
+      "active": true,
+      "package_weight_kg": 0.2,
+      "package_length_cm": 20,
+      "package_width_cm": 10,
+      "package_height_cm": 8,
+      "images": [
+        "/static/uploads/instagram_posts/post-07.png"
+      ],
+      "brand_featured": false
+    },
+    "deleted_at": "2026-11-03T15:26:13",
+    "expires_at": "2026-12-03T15:26:13"
+  },
+  {
+    "product": {
+      "id": 24,
+      "name": "Bat de softball amarillo y morado",
+      "category": "Bat",
+      "section": "Softball",
+      "sections": [
+        "Softball"
+      ],
+      "price": 3100,
+      "description": "Bat de softball amarillo y morado, mostrado en una publicación de FR BEISSHOP.",
+      "tag": "Instagram",
+      "image": "/static/uploads/instagram_posts/post-08.png",
+      "views": 0,
+      "admin_added": true,
+      "stock": 10,
+      "bat_measure": "34",
+      "bat_weight": "-9",
+      "active": true,
+      "package_weight_kg": 1.2,
+      "package_length_cm": 90,
+      "package_width_cm": 10,
+      "package_height_cm": 10,
+      "images": [
+        "/static/uploads/instagram_posts/post-08.png"
+      ],
+      "brand_featured": false
+    },
+    "deleted_at": "2026-11-03T15:26:19",
+    "expires_at": "2026-12-03T15:26:19"
+  },
+  {
+    "product": {
+      "id": 25,
+      "name": "Bat de softball amarillo y verde",
+      "category": "Bat",
+      "section": "Softball",
+      "sections": [
+        "Softball"
+      ],
+      "price": 1850,
+      "description": "Bat de softball amarillo y verde, mostrado en una publicación de FR BEISSHOP.",
+      "tag": "Instagram",
+      "image": "/static/uploads/instagram_posts/post-09.png",
+      "views": 0,
+      "admin_added": true,
+      "stock": 10,
+      "bat_measure": "34",
+      "bat_weight": "-9",
+      "active": true,
+      "package_weight_kg": 1.2,
+      "package_length_cm": 90,
+      "package_width_cm": 10,
+      "package_height_cm": 10,
+      "images": [
+        "/static/uploads/instagram_posts/post-09.png"
+      ],
+      "brand_featured": false
+    },
+    "deleted_at": "2026-11-03T15:26:24",
+    "expires_at": "2026-12-03T15:26:24"
+  },
+  {
+    "product": {
+      "id": 26,
+      "name": "Guante de bateo Franklin blanco",
+      "category": "Guantes",
+      "section": "Béisbol",
+      "sections": [
+        "Béisbol"
+      ],
+      "price": 2200,
+      "description": "Guante de bateo Franklin blanco, mostrado en una publicación de FR BEISSHOP.",
+      "tag": "Instagram",
+      "image": "/static/uploads/instagram_posts/post-10.png",
+      "views": 0,
+      "admin_added": true,
+      "stock": 10,
+      "active": true,
+      "package_weight_kg": 0.5,
+      "package_length_cm": 30,
+      "package_width_cm": 20,
+      "package_height_cm": 12,
+      "images": [
+        "/static/uploads/instagram_posts/post-10.png"
+      ],
+      "brand_featured": false
+    },
+    "deleted_at": "2026-11-03T15:26:29",
+    "expires_at": "2026-12-03T15:26:29"
+  },
+  {
+    "product": {
+      "id": 27,
+      "name": "Calcetas Easton blancas y negras",
+      "category": "Accesorios de entrenamiento",
+      "section": "Béisbol",
+      "sections": [
+        "Béisbol"
+      ],
+      "price": 1000,
+      "description": "Calcetas Easton blancas y negras, mostrado en una publicación de FR BEISSHOP.",
+      "tag": "Instagram",
+      "image": "/static/uploads/instagram_posts/post-11.png",
+      "views": 0,
+      "admin_added": true,
+      "stock": 10,
+      "active": true,
+      "package_weight_kg": 0.5,
+      "package_length_cm": 30,
+      "package_width_cm": 20,
+      "package_height_cm": 15,
+      "images": [
+        "/static/uploads/instagram_posts/post-11.png"
+      ],
+      "brand_featured": false
+    },
+    "deleted_at": "2026-11-03T15:26:33",
+    "expires_at": "2026-12-03T15:26:33"
+  },
+  {
+    "product": {
+      "id": 28,
+      "name": "Calcetas deportivas Game Socks",
+      "category": "Accesorios de entrenamiento",
+      "section": "Béisbol",
+      "sections": [
+        "Béisbol"
+      ],
+      "price": 1100,
+      "description": "Calcetas deportivas Game Socks, mostrado en una publicación de FR BEISSHOP.",
+      "tag": "Instagram",
+      "image": "/static/uploads/instagram_posts/post-12.png",
+      "views": 0,
+      "admin_added": true,
+      "stock": 10,
+      "active": true,
+      "package_weight_kg": 0.5,
+      "package_length_cm": 30,
+      "package_width_cm": 20,
+      "package_height_cm": 15,
+      "images": [
+        "/static/uploads/instagram_posts/post-12.png"
+      ],
+      "brand_featured": false
+    },
+    "deleted_at": "2026-11-03T15:26:37",
+    "expires_at": "2026-12-03T15:26:37"
+  },
+  {
+    "product": {
+      "id": 29,
+      "name": "Set de mini bates de entrenamiento",
+      "category": "Bat",
+      "section": "Béisbol",
+      "sections": [
+        "Béisbol"
+      ],
+      "price": 1650,
+      "description": "Set de mini bates de entrenamiento, mostrado en una publicación de FR BEISSHOP.",
+      "tag": "Instagram",
+      "image": "/static/uploads/instagram_posts/post-13.png",
+      "views": 0,
+      "admin_added": true,
+      "stock": 10,
+      "bat_measure": "33",
+      "bat_weight": "-3",
+      "active": true,
+      "package_weight_kg": 1.2,
+      "package_length_cm": 90,
+      "package_width_cm": 10,
+      "package_height_cm": 10,
+      "images": [
+        "/static/uploads/instagram_posts/post-13.png"
+      ],
+      "brand_featured": false
+    },
+    "deleted_at": "2026-11-03T15:26:40",
+    "expires_at": "2026-12-03T15:26:40"
+  },
+  {
+    "product": {
+      "id": 30,
+      "name": "Bat azul de entrenamiento",
+      "category": "Bat",
+      "section": "Béisbol",
+      "sections": [
+        "Béisbol"
+      ],
+      "price": 2800,
+      "description": "Bat azul de entrenamiento, mostrado en una publicación de FR BEISSHOP.",
+      "tag": "Instagram",
+      "image": "/static/uploads/instagram_posts/post-14.png",
+      "views": 0,
+      "admin_added": true,
+      "stock": 10,
+      "bat_measure": "33",
+      "bat_weight": "-3",
+      "active": true,
+      "package_weight_kg": 1.2,
+      "package_length_cm": 90,
+      "package_width_cm": 10,
+      "package_height_cm": 10,
+      "images": [
+        "/static/uploads/instagram_posts/post-14.png"
+      ],
+      "brand_featured": false
+    },
+    "deleted_at": "2026-11-03T15:26:47",
+    "expires_at": "2026-12-03T15:26:47"
+  },
+  {
+    "product": {
+      "id": 31,
+      "name": "Colección de tarjetas Topps Baseball",
+      "category": "Accesorios de entrenamiento",
+      "section": "Béisbol",
+      "sections": [
+        "Béisbol"
+      ],
+      "price": 450,
+      "description": "Colección de tarjetas Topps Baseball, mostrado en una publicación de FR BEISSHOP.",
+      "tag": "Instagram",
+      "image": "/static/uploads/instagram_posts/post-15.png",
+      "views": 0,
+      "admin_added": true,
+      "stock": 10,
+      "active": true,
+      "package_weight_kg": 0.5,
+      "package_length_cm": 30,
+      "package_width_cm": 20,
+      "package_height_cm": 15,
+      "images": [
+        "/static/uploads/instagram_posts/post-15.png"
+      ],
+      "brand_featured": false
+    },
+    "deleted_at": "2026-11-03T15:26:51",
+    "expires_at": "2026-12-03T15:26:51"
+  },
+  {
+    "product": {
+      "id": 32,
+      "name": "Bat de softball amarillo DeMarini",
+      "category": "Bat",
+      "section": "Softball",
+      "sections": [
+        "Softball"
+      ],
+      "price": 3100,
+      "description": "Bat de softball amarillo DeMarini, mostrado en una publicación de FR BEISSHOP.",
+      "tag": "Instagram",
+      "image": "/static/uploads/instagram_posts/post-16.png",
+      "views": 0,
+      "admin_added": true,
+      "stock": 10,
+      "bat_measure": "34",
+      "bat_weight": "-9",
+      "active": true,
+      "package_weight_kg": 1.2,
+      "package_length_cm": 90,
+      "package_width_cm": 10,
+      "package_height_cm": 10,
+      "images": [
+        "/static/uploads/instagram_posts/post-16.png"
+      ],
+      "brand_featured": false
+    },
+    "deleted_at": "2026-11-03T15:26:55",
+    "expires_at": "2026-12-03T15:26:55"
+  },
+  {
+    "product": {
+      "id": 33,
+      "name": "Casco de bateo Easton azul",
+      "category": "Bat",
+      "section": "Béisbol",
+      "sections": [
+        "Béisbol"
+      ],
+      "price": 1300,
+      "description": "Casco de bateo Easton azul, mostrado en una publicación de FR BEISSHOP.",
+      "tag": "Instagram",
+      "image": "/static/uploads/instagram_posts/post-17.png",
+      "views": 0,
+      "admin_added": true,
+      "stock": 10,
+      "active": true,
+      "package_weight_kg": 1.2,
+      "package_length_cm": 90,
+      "package_width_cm": 10,
+      "package_height_cm": 10,
+      "images": [
+        "/static/uploads/instagram_posts/post-17.png"
+      ],
+      "brand_featured": false
+    },
+    "deleted_at": "2026-11-03T15:26:58",
+    "expires_at": "2026-12-03T15:26:58"
+  },
+  {
+    "product": {
+      "id": 34,
+      "name": "Casco de bateo Easton negro",
+      "category": "Bat",
+      "section": "Béisbol",
+      "sections": [
+        "Béisbol"
+      ],
+      "price": 1200,
+      "description": "Casco de bateo Easton negro, mostrado en una publicación de FR BEISSHOP.",
+      "tag": "Instagram",
+      "image": "/static/uploads/instagram_posts/post-18.png",
+      "views": 1,
+      "admin_added": true,
+      "stock": 10,
+      "active": true,
+      "package_weight_kg": 1.2,
+      "package_length_cm": 90,
+      "package_width_cm": 10,
+      "package_height_cm": 10,
+      "images": [
+        "/static/uploads/instagram_posts/post-18.png"
+      ],
+      "brand_featured": false
+    },
+    "deleted_at": "2026-11-03T15:27:02",
+    "expires_at": "2026-12-03T15:27:02"
+  },
+  {
+    "product": {
+      "id": 35,
+      "name": "Set de tres bates Easton",
+      "category": "Bat",
+      "section": "Béisbol",
+      "sections": [
+        "Béisbol"
+      ],
+      "price": 2700,
+      "description": "Set de tres bates Easton, mostrado en una publicación de FR BEISSHOP.",
+      "tag": "Instagram",
+      "image": "/static/uploads/instagram_posts/post-19.png",
+      "views": 0,
+      "admin_added": true,
+      "stock": 10,
+      "bat_measure": "33",
+      "bat_weight": "-3",
+      "active": true,
+      "package_weight_kg": 1.2,
+      "package_length_cm": 90,
+      "package_width_cm": 10,
+      "package_height_cm": 10,
+      "images": [
+        "/static/uploads/instagram_posts/post-19.png"
+      ],
+      "brand_featured": false
+    },
+    "deleted_at": "2026-11-03T15:27:06",
+    "expires_at": "2026-12-03T15:27:06"
+  },
+  {
+    "product": {
+      "id": 36,
+      "name": "Guante Rawlings negro y azul",
+      "category": "Guantes",
+      "section": "Béisbol",
+      "sections": [
+        "Béisbol"
+      ],
+      "price": 2100,
+      "description": "Guante Rawlings negro y azul, mostrado en una publicación de FR BEISSHOP.",
+      "tag": "Instagram",
+      "image": "/static/uploads/instagram_posts/post-20.png",
+      "views": 0,
+      "admin_added": true,
+      "stock": 10,
+      "active": true,
+      "package_weight_kg": 0.5,
+      "package_length_cm": 30,
+      "package_width_cm": 20,
+      "package_height_cm": 12,
+      "images": [
+        "/static/uploads/instagram_posts/post-20.png"
+      ],
+      "brand_featured": false
+    },
+    "deleted_at": "2026-11-03T15:27:09",
+    "expires_at": "2026-12-03T15:27:09"
+  },
+  {
+    "product": {
+      "id": 37,
+      "name": "Grip Bruce Bolt azul",
+      "category": "Grip",
+      "section": "Softball",
+      "sections": [
+        "Softball"
+      ],
+      "price": 550,
+      "description": "Grip Bruce Bolt azul, mostrado en una publicación de FR BEISSHOP.",
+      "tag": "Instagram",
+      "image": "/static/uploads/instagram_posts/post-21.png",
+      "views": 0,
+      "admin_added": true,
+      "stock": 10,
+      "grip_thickness": "1.1mm",
+      "active": true,
+      "package_weight_kg": 0.2,
+      "package_length_cm": 20,
+      "package_width_cm": 10,
+      "package_height_cm": 8,
+      "images": [
+        "/static/uploads/instagram_posts/post-21.png"
+      ],
+      "brand_featured": false
+    },
+    "deleted_at": "2026-11-03T15:27:13",
+    "expires_at": "2026-12-03T15:27:13"
+  },
+  {
+    "product": {
+      "id": 38,
+      "name": "Grip de bat negro",
+      "category": "Grip",
+      "section": "Softball",
+      "sections": [
+        "Softball"
+      ],
+      "price": 400,
+      "description": "Grip de bat negro, mostrado en una publicación de FR BEISSHOP.",
+      "tag": "Instagram",
+      "image": "/static/uploads/instagram_posts/post-22.png",
+      "views": 0,
+      "admin_added": true,
+      "stock": 10,
+      "grip_thickness": "1.1mm",
+      "active": true,
+      "package_weight_kg": 0.2,
+      "package_length_cm": 20,
+      "package_width_cm": 10,
+      "package_height_cm": 8,
+      "images": [
+        "/static/uploads/instagram_posts/post-22.png"
+      ],
+      "brand_featured": false
+    },
+    "deleted_at": "2026-11-03T15:27:17",
+    "expires_at": "2026-12-03T15:27:17"
+  },
+  {
+    "product": {
+      "id": 39,
+      "name": "Tenis New Balance para béisbol",
+      "category": "Accesorios de entrenamiento",
+      "section": "Béisbol",
+      "sections": [
+        "Béisbol"
+      ],
+      "price": 500,
+      "description": "Tenis New Balance para béisbol, mostrado en una publicación de FR BEISSHOP.",
+      "tag": "Instagram",
+      "image": "/static/uploads/instagram_posts/post-23.png",
+      "views": 0,
+      "admin_added": true,
+      "stock": 10,
+      "active": true,
+      "package_weight_kg": 0.5,
+      "package_length_cm": 30,
+      "package_width_cm": 20,
+      "package_height_cm": 15,
+      "images": [
+        "/static/uploads/instagram_posts/post-23.png"
+      ],
+      "brand_featured": false
+    },
+    "deleted_at": "2026-11-03T15:27:20",
+    "expires_at": "2026-12-03T15:27:20"
+  },
+  {
+    "product": {
+      "id": 40,
+      "name": "Extensión ajustable Rawlings",
+      "category": "Accesorios de entrenamiento",
+      "section": "Béisbol",
+      "sections": [
+        "Béisbol"
+      ],
+      "price": 1750,
+      "description": "Extensión ajustable Rawlings, mostrado en una publicación de FR BEISSHOP.",
+      "tag": "Instagram",
+      "image": "/static/uploads/instagram_posts/post-24.png",
+      "views": 0,
+      "admin_added": true,
+      "stock": 10,
+      "active": true,
+      "package_weight_kg": 0.5,
+      "package_length_cm": 30,
+      "package_width_cm": 20,
+      "package_height_cm": 15,
+      "images": [
+        "/static/uploads/instagram_posts/post-24.png"
+      ],
+      "brand_featured": false
+    },
+    "deleted_at": "2026-11-03T15:27:24",
+    "expires_at": "2026-12-03T15:27:24"
+  },
+  {
+    "product": {
+      "id": 41,
+      "name": "Guante de bateo Franklin azul marino",
+      "category": "Guantes",
+      "section": "Béisbol",
+      "sections": [
+        "Béisbol"
+      ],
+      "price": 2400,
+      "description": "Guante de bateo Franklin azul marino, mostrado en una publicación de FR BEISSHOP.",
+      "tag": "Instagram",
+      "image": "/static/uploads/instagram_posts/post-25.png",
+      "views": 0,
+      "admin_added": true,
+      "stock": 10,
+      "active": true,
+      "package_weight_kg": 0.5,
+      "package_length_cm": 30,
+      "package_width_cm": 20,
+      "package_height_cm": 12,
+      "images": [
+        "/static/uploads/instagram_posts/post-25.png"
+      ],
+      "brand_featured": false
+    },
+    "deleted_at": "2026-11-03T15:27:28",
+    "expires_at": "2026-12-03T15:27:28"
+  },
+  {
+    "product": {
+      "id": 42,
+      "name": "Guante Rawlings negro con costuras doradas",
+      "category": "Guantes",
+      "section": "Béisbol",
+      "sections": [
+        "Béisbol"
+      ],
+      "price": 2300,
+      "description": "Guante Rawlings negro con costuras doradas, mostrado en una publicación de FR BEISSHOP.",
+      "tag": "Instagram",
+      "image": "/static/uploads/instagram_posts/post-26.png",
+      "views": 0,
+      "admin_added": true,
+      "stock": 10,
+      "active": true,
+      "package_weight_kg": 0.5,
+      "package_length_cm": 30,
+      "package_width_cm": 20,
+      "package_height_cm": 12,
+      "images": [
+        "/static/uploads/instagram_posts/post-26.png"
+      ],
+      "brand_featured": false
+    },
+    "deleted_at": "2026-11-03T15:27:31",
+    "expires_at": "2026-12-03T15:27:31"
+  },
+  {
+    "product": {
+      "id": 56,
+      "name": "Bat Easton Ghost",
+      "category": "Bat",
+      "section": "Béisbol",
+      "sections": [
+        "Béisbol"
+      ],
+      "price": 1550,
+      "description": "Bat Easton Ghost, mostrado en una publicación de FR BEISSHOP.",
+      "tag": "Instagram",
+      "image": "/static/uploads/instagram_posts/post-40.png",
+      "views": 0,
+      "admin_added": true,
+      "stock": 10,
+      "bat_measure": "33",
+      "bat_weight": "-3",
+      "active": true,
+      "package_weight_kg": 1.2,
+      "package_length_cm": 90,
+      "package_width_cm": 10,
+      "package_height_cm": 10,
+      "images": [
+        "/static/uploads/instagram_posts/post-40.png"
+      ],
+      "brand_featured": false
+    },
+    "deleted_at": "2026-11-03T15:27:37",
+    "expires_at": "2026-12-03T15:27:37"
+  },
+  {
+    "product": {
+      "id": 43,
+      "name": "Grip Lizard Skins DSP Ultra",
+      "category": "Grip",
+      "section": "Softball",
+      "sections": [
+        "Softball"
+      ],
+      "price": 350,
+      "description": "Grip Lizard Skins DSP Ultra, mostrado en una publicación de FR BEISSHOP.",
+      "tag": "Instagram",
+      "image": "/static/uploads/instagram_posts/post-27.png",
+      "views": 0,
+      "admin_added": true,
+      "stock": 10,
+      "grip_thickness": "1.1mm",
+      "active": true,
+      "package_weight_kg": 0.2,
+      "package_length_cm": 20,
+      "package_width_cm": 10,
+      "package_height_cm": 8,
+      "images": [
+        "/static/uploads/instagram_posts/post-27.png"
+      ],
+      "brand_featured": false
+    },
+    "deleted_at": "2026-11-03T15:27:41",
+    "expires_at": "2026-12-03T15:27:41"
+  },
+  {
+    "product": {
+      "id": 44,
+      "name": "Casco de bateo Easton azul marino",
+      "category": "Bat",
+      "section": "Béisbol",
+      "sections": [
+        "Béisbol"
+      ],
+      "price": 800,
+      "description": "Casco de bateo Easton azul marino, mostrado en una publicación de FR BEISSHOP.",
+      "tag": "Instagram",
+      "image": "/static/uploads/instagram_posts/post-28.png",
+      "views": 0,
+      "admin_added": true,
+      "stock": 10,
+      "active": true,
+      "package_weight_kg": 1.2,
+      "package_length_cm": 90,
+      "package_width_cm": 10,
+      "package_height_cm": 10,
+      "images": [
+        "/static/uploads/instagram_posts/post-28.png"
+      ],
+      "brand_featured": false
+    },
+    "deleted_at": "2026-11-03T15:27:45",
+    "expires_at": "2026-12-03T15:27:45"
+  },
+  {
+    "product": {
+      "id": 45,
+      "name": "Bat Easton verde",
+      "category": "Bat",
+      "section": "Béisbol",
+      "sections": [
+        "Béisbol"
+      ],
+      "price": 1700,
+      "description": "Bat Easton verde, mostrado en una publicación de FR BEISSHOP.",
+      "tag": "Instagram",
+      "image": "/static/uploads/instagram_posts/post-29.png",
+      "views": 0,
+      "admin_added": true,
+      "stock": 10,
+      "bat_measure": "33",
+      "bat_weight": "-3",
+      "active": true,
+      "package_weight_kg": 1.2,
+      "package_length_cm": 90,
+      "package_width_cm": 10,
+      "package_height_cm": 10,
+      "images": [
+        "/static/uploads/instagram_posts/post-29.png"
+      ],
+      "brand_featured": false
+    },
+    "deleted_at": "2026-11-03T15:27:48",
+    "expires_at": "2026-12-03T15:27:48"
+  },
+  {
+    "product": {
+      "id": 46,
+      "name": "Guante Rawlings negro y rojo",
+      "category": "Guantes",
+      "section": "Béisbol",
+      "sections": [
+        "Béisbol"
+      ],
+      "price": 650,
+      "description": "Guante Rawlings negro y rojo, mostrado en una publicación de FR BEISSHOP.",
+      "tag": "Instagram",
+      "image": "/static/uploads/instagram_posts/post-30.png",
+      "views": 0,
+      "admin_added": true,
+      "stock": 10,
+      "active": true,
+      "package_weight_kg": 0.5,
+      "package_length_cm": 30,
+      "package_width_cm": 20,
+      "package_height_cm": 12,
+      "images": [
+        "/static/uploads/instagram_posts/post-30.png"
+      ],
+      "brand_featured": false
+    },
+    "deleted_at": "2026-11-03T15:27:51",
+    "expires_at": "2026-12-03T15:27:51"
+  },
+  {
+    "product": {
+      "id": 47,
+      "name": "Guante Rawlings tan con cordones azules",
+      "category": "Guantes",
+      "section": "Béisbol",
+      "sections": [
+        "Béisbol"
+      ],
+      "price": 2150,
+      "description": "Guante Rawlings tan con cordones azules, mostrado en una publicación de FR BEISSHOP.",
+      "tag": "Instagram",
+      "image": "/static/uploads/instagram_posts/post-31.png",
+      "views": 0,
+      "admin_added": true,
+      "stock": 10,
+      "active": true,
+      "package_weight_kg": 0.5,
+      "package_length_cm": 30,
+      "package_width_cm": 20,
+      "package_height_cm": 12,
+      "images": [
+        "/static/uploads/instagram_posts/post-31.png"
+      ],
+      "brand_featured": false
+    },
+    "deleted_at": "2026-11-03T15:27:55",
+    "expires_at": "2026-12-03T15:27:55"
+  },
+  {
+    "product": {
+      "id": 48,
+      "name": "Guante Rawlings negro de infield",
+      "category": "Guantes",
+      "section": "Béisbol",
+      "sections": [
+        "Béisbol"
+      ],
+      "price": 1300,
+      "description": "Guante Rawlings negro de infield, mostrado en una publicación de FR BEISSHOP.",
+      "tag": "Instagram",
+      "image": "/static/uploads/instagram_posts/post-32.png",
+      "views": 0,
+      "admin_added": true,
+      "stock": 10,
+      "active": true,
+      "package_weight_kg": 0.5,
+      "package_length_cm": 30,
+      "package_width_cm": 20,
+      "package_height_cm": 12,
+      "images": [
+        "/static/uploads/instagram_posts/post-32.png"
+      ],
+      "brand_featured": false
+    },
+    "deleted_at": "2026-11-03T15:27:58",
+    "expires_at": "2026-12-03T15:27:58"
+  },
+  {
+    "product": {
+      "id": 49,
+      "name": "Guante Rawlings tan juvenil",
+      "category": "Guantes",
+      "section": "Béisbol",
+      "sections": [
+        "Béisbol"
+      ],
+      "price": 950,
+      "description": "Guante Rawlings tan juvenil, mostrado en una publicación de FR BEISSHOP.",
+      "tag": "Instagram",
+      "image": "/static/uploads/instagram_posts/post-33.png",
+      "views": 0,
+      "admin_added": true,
+      "stock": 10,
+      "active": true,
+      "package_weight_kg": 0.5,
+      "package_length_cm": 30,
+      "package_width_cm": 20,
+      "package_height_cm": 12,
+      "images": [
+        "/static/uploads/instagram_posts/post-33.png"
+      ],
+      "brand_featured": false
+    },
+    "deleted_at": "2026-11-03T15:28:02",
+    "expires_at": "2026-12-03T15:28:02"
+  },
+  {
+    "product": {
+      "id": 50,
+      "name": "Guante de bateo Franklin rojo",
+      "category": "Guantes",
+      "section": "Béisbol",
+      "sections": [
+        "Béisbol"
+      ],
+      "price": 2500,
+      "description": "Guante de bateo Franklin rojo, mostrado en una publicación de FR BEISSHOP.",
+      "tag": "Instagram",
+      "image": "/static/uploads/instagram_posts/post-34.png",
+      "views": 0,
+      "admin_added": true,
+      "stock": 10,
+      "active": true,
+      "package_weight_kg": 0.5,
+      "package_length_cm": 30,
+      "package_width_cm": 20,
+      "package_height_cm": 12,
+      "images": [
+        "/static/uploads/instagram_posts/post-34.png"
+      ],
+      "brand_featured": false
+    },
+    "deleted_at": "2026-11-03T15:28:04",
+    "expires_at": "2026-12-03T15:28:04"
+  },
+  {
+    "product": {
+      "id": 51,
+      "name": "Bat Easton negro y rojo",
+      "category": "Bat",
+      "section": "Béisbol",
+      "sections": [
+        "Béisbol"
+      ],
+      "price": 1550,
+      "description": "Bat Easton negro y rojo, mostrado en una publicación de FR BEISSHOP.",
+      "tag": "Instagram",
+      "image": "/static/uploads/instagram_posts/post-35.png",
+      "views": 0,
+      "admin_added": true,
+      "stock": 10,
+      "bat_measure": "33",
+      "bat_weight": "-3",
+      "active": true,
+      "package_weight_kg": 1.2,
+      "package_length_cm": 90,
+      "package_width_cm": 10,
+      "package_height_cm": 10,
+      "images": [
+        "/static/uploads/instagram_posts/post-35.png"
+      ],
+      "brand_featured": false
+    },
+    "deleted_at": "2026-11-03T15:28:07",
+    "expires_at": "2026-12-03T15:28:07"
+  },
+  {
+    "product": {
+      "id": 54,
+      "name": "Colección de bates surtidos",
+      "category": "Bat",
+      "section": "Béisbol",
+      "sections": [
+        "Béisbol"
+      ],
+      "price": 2900,
+      "description": "Colección de bates surtidos, mostrado en una publicación de FR BEISSHOP.",
+      "tag": "Instagram",
+      "image": "/static/uploads/instagram_posts/post-38.png",
+      "views": 0,
+      "admin_added": true,
+      "stock": 10,
+      "bat_measure": "33",
+      "bat_weight": "-3",
+      "active": true,
+      "package_weight_kg": 1.2,
+      "package_length_cm": 90,
+      "package_width_cm": 10,
+      "package_height_cm": 10,
+      "images": [
+        "/static/uploads/instagram_posts/post-38.png"
+      ],
+      "brand_featured": false
+    },
+    "deleted_at": "2026-11-03T15:28:14",
+    "expires_at": "2026-12-03T15:28:14"
+  }
+]

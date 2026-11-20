@@ -1,0 +1,333 @@
+{% extends "base.html" %}
+{% block title %}Panel de administración | FR BEISSHOP{% endblock %}
+{% block content %}
+<section class="admin-page section-wrap">
+  <div class="admin-heading">
+    <div>
+      <p class="eyebrow eyebrow-dark">FR BEISSHOP / ADMINISTRACIÓN</p>
+      <h1>Administrar productos</h1>
+    </div>
+    <div class="admin-heading-actions">
+      <a class="admin-cancel" href="{{ url_for('admin_menu') }}">Volver al menú</a>
+      <form action="{{ url_for('admin_logout') }}" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="text-button" type="submit">Cerrar sesión</button>
+      </form>
+    </div>
+  </div>
+
+  <form id="agregar-producto" class="admin-form admin-product-form" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="admin-fields">
+      <label class="admin-wide">¿A qué categoría va el artículo?
+        <select id="categoria-producto" name="categoria" required>
+          <option value="">Selecciona una categoría</option>
+          {% for category in categories %}<option value="{{ category }}" {% if request.form.get('categoria') == category %}selected{% endif %}>{{ category }}</option>{% endfor %}
+          <option value="__nuestra_marca__" {% if request.form.get('categoria') == '__nuestra_marca__' %}selected{% endif %}>Nuestra marca</option>
+        </select>
+      </label>
+      <div id="ubicacion-producto" class="admin-fields admin-wide" hidden>
+        <label id="destino-unico">¿Dónde aparecerá el producto?
+          <select id="seccion-producto" name="seccion" required>
+            <option value="">Elige Béisbol o Sóftbol</option>
+            {% for section in sections %}<option value="{{ section }}">{{ section|section_label }}</option>{% endfor %}
+            <option value="__nuestra_marca__">Nuestra marca</option>
+          </select>
+        </label>
+        <div id="destinos-grip" class="admin-wide" hidden>
+          <p class="admin-choice-heading">Este artículo aparecerá en:</p>
+          {% for section in sections %}
+            <label class="admin-checkbox"><input type="checkbox" name="secciones" value="{{ section }}" checked> {{ section|section_label }}</label>
+          {% endfor %}
+        </div>
+        <label id="marca-destino-opcional" class="admin-checkbox admin-wide"><input type="checkbox" name="mostrar_en_marca" value="1"> También mostrar en Nuestra marca</label>
+        <p id="marca-categoria-aviso" class="admin-choice-heading admin-wide" hidden>Este producto aparecerá en Nuestra marca.</p>
+      </div>
+      <div id="detalles-producto" class="admin-fields admin-wide" hidden>
+        <label>Nombre del artículo
+          <input name="nombre" placeholder="Ej. Bat de aluminio" required>
+        </label>
+        <div id="opciones-guante" class="admin-wide" hidden>
+          <label>Medida del guante
+            <select id="medida-guante" name="medida" required disabled>
+              <option value="">Selecciona una medida</option>
+              {% for measure in glove_measures %}<option value="{{ measure }}">{{ measure }} pulgadas</option>{% endfor %}
+            </select>
+          </label>
+        </div>
+        <div id="opciones-guantaleta" class="admin-wide" hidden>
+          <label>Talla de la guantaleta
+            <select id="talla-guantaleta" name="talla" required disabled>
+              <option value="">Selecciona una talla</option>
+              {% for size in guantaleta_sizes %}<option value="{{ size }}">{{ size }}</option>{% endfor %}
+            </select>
+          </label>
+        </div>
+        <div id="opciones-grip" class="admin-wide" hidden>
+          <label>Grosor
+            <select id="grosor-grip" name="grosor" required disabled>
+              <option value="">Selecciona un grosor</option>
+              {% for thickness in grip_thicknesses %}<option value="{{ thickness }}">{{ thickness }}</option>{% endfor %}
+            </select>
+          </label>
+        </div>
+        <div id="opciones-bat-beisbol" class="admin-fields admin-wide" hidden>
+          <label>Medida del bat
+            <select id="medida-bat" name="medida" required disabled>
+              <option value="">Selecciona una medida</option>
+            </select>
+          </label>
+          <label>Peso
+            <select id="peso-bat" name="peso" required disabled>
+              <option value="">Selecciona el peso</option>
+            </select>
+          </label>
+        </div>
+        <div id="opciones-personalizacion-bat" class="admin-fields admin-wide" hidden>
+          <label class="admin-checkbox admin-wide"><input type="checkbox" name="personalizable" value="1"> Permitir personalización del bat</label>
+          <label>Colores del bat <span>(separados por comas)</span>
+            <input name="colores_bat" value="Natural,Negro,Rojo,Azul,Rosa" placeholder="Natural,Negro,Rojo,Azul,Rosa">
+          </label>
+          <label>Colores del grip <span>(separados por comas)</span>
+            <input name="colores_grip" value="Negro,Rojo,Azul,Blanco" placeholder="Negro,Rojo,Azul,Blanco">
+          </label>
+        </div>
+        <label>Precio en MXN
+          <input name="precio" type="number" min="1" step="1" placeholder="1499" required>
+        </label>
+        <label>Existencias
+          <input name="stock" type="number" min="0" step="1" placeholder="10" required>
+        </label>
+        <div class="admin-fields admin-wide package-fields">
+          <p class="admin-choice-heading admin-wide">Datos del paquete para paquetería</p>
+          <label>Peso (kg)
+            <input name="peso_paquete" type="number" min="0.001" max="1000" step="0.001" placeholder="1.200" required>
+          </label>
+          <label>Largo (cm)
+            <input name="largo_paquete" type="number" min="0.01" max="500" step="0.01" placeholder="30" required>
+          </label>
+          <label>Ancho (cm)
+            <input name="ancho_paquete" type="number" min="0.01" max="500" step="0.01" placeholder="20" required>
+          </label>
+          <label>Alto (cm)
+            <input name="alto_paquete" type="number" min="0.01" max="500" step="0.01" placeholder="15" required>
+          </label>
+        </div>
+        <label class="admin-wide">Descripción
+          <textarea name="descripcion" rows="3" placeholder="Describe brevemente el producto"></textarea>
+        </label>
+        <label class="admin-wide">Seleccionar imágenes desde la computadora <span>(JPG, PNG o WEBP; hasta 8 MB por imagen)</span>
+          <input name="imagen_archivo" type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple>
+          <small class="admin-file-help">Puedes seleccionar varias imágenes. La primera será la imagen principal.</small>
+        </label>
+      </div>
+    </div>
+    <button id="guardar-producto" class="button button-dark" type="submit" hidden>Agregar a la tienda <span aria-hidden="true">+</span></button>
+  </form>
+  <script>
+    (() => {
+      const category = document.getElementById("categoria-producto");
+      const section = document.getElementById("seccion-producto");
+      const location = document.getElementById("ubicacion-producto");
+      const optionalBrandDestination = document.getElementById("marca-destino-opcional");
+      const brandCategoryNotice = document.getElementById("marca-categoria-aviso");
+      const uniqueDestination = document.getElementById("destino-unico");
+      const gripDestinations = document.getElementById("destinos-grip");
+      const gripDestinationFields = gripDestinations.querySelectorAll('input[name="secciones"]');
+      const details = document.getElementById("detalles-producto");
+      const gloveOptions = document.getElementById("opciones-guante");
+      const gloveMeasure = document.getElementById("medida-guante");
+      const guantaletaOptions = document.getElementById("opciones-guantaleta");
+      const guantaletaSize = document.getElementById("talla-guantaleta");
+      const gripOptions = document.getElementById("opciones-grip");
+      const gripThickness = document.getElementById("grosor-grip");
+      const batOptions = document.getElementById("opciones-bat-beisbol");
+      const customizationOptions = document.getElementById("opciones-personalizacion-bat");
+      const measureField = document.getElementById("medida-bat");
+      const weightField = document.getElementById("peso-bat");
+      const submit = document.getElementById("guardar-producto");
+      const setOptions = (field, placeholder, values, restoreSaved = false) => {
+        const selected = field.value || (restoreSaved ? field.dataset.savedValue : "") || "";
+        field.replaceChildren(new Option(placeholder, ""));
+        values.forEach((value) => {
+          const label = field === measureField ? `${value} pulgadas` : value;
+          field.add(new Option(label, value));
+        });
+        field.value = values.includes(selected) ? selected : "";
+      };
+      let firstRender = true;
+      const updateForm = () => {
+        const hasCategory = Boolean(category.value);
+        const isGrip = category.value === "Grip";
+        const isBrandCategory = category.value === "__nuestra_marca__";
+        const isBrandDestination = section.value === "__nuestra_marca__";
+        const hasGripDestination = [...gripDestinationFields].some((field) => field.checked);
+        const hasDestination = hasCategory && (isGrip ? hasGripDestination : Boolean(section.value));
+        location.hidden = !hasCategory;
+        optionalBrandDestination.hidden = isBrandCategory || isBrandDestination;
+        brandCategoryNotice.hidden = !(isBrandCategory || isBrandDestination);
+        uniqueDestination.hidden = isGrip;
+        section.disabled = !hasCategory || isGrip;
+        gripDestinations.hidden = !hasCategory || !isGrip;
+        gripDestinationFields.forEach((field) => {
+          field.disabled = !isGrip;
+        });
+        details.hidden = !hasDestination;
+        submit.hidden = !hasDestination;
+        details.querySelectorAll("input, select, textarea").forEach((field) => {
+          field.disabled = !hasDestination;
+        });
+        const showGloveOptions = hasDestination && category.value === "Guantes";
+        gloveOptions.hidden = !showGloveOptions;
+        gloveMeasure.disabled = !showGloveOptions;
+        const showGuantaletaOptions = hasDestination && category.value === "Guantaletas";
+        guantaletaOptions.hidden = !showGuantaletaOptions;
+        guantaletaSize.disabled = !showGuantaletaOptions;
+        const showGripOptions = hasDestination && isGrip;
+        gripOptions.hidden = !showGripOptions;
+        gripThickness.disabled = !showGripOptions;
+        const showBatOptions = hasDestination && category.value === "Bat";
+        batOptions.hidden = !showBatOptions;
+        customizationOptions.hidden = !showBatOptions;
+        if (showBatOptions) {
+          const measures = section.value === "Softball" ? ["34"] : ["32", "33", "33.5", "34"];
+          const weights = section.value === "Softball" ? ["-6", "-7", "-8", "-9", "-10"] : ["-3"];
+          setOptions(measureField, "Selecciona una medida", measures, firstRender);
+          setOptions(weightField, "Selecciona el peso", weights, firstRender);
+        }
+        batOptions.querySelectorAll("select").forEach((field) => {
+          field.disabled = !showBatOptions;
+        });
+        customizationOptions.querySelectorAll("input").forEach((field) => {
+          field.disabled = !showBatOptions;
+        });
+        firstRender = false;
+      };
+      category.addEventListener("change", () => {
+        if (section.value === "__nuestra_marca__") section.value = "";
+        updateForm();
+      });
+      section.addEventListener("change", updateForm);
+      gripDestinationFields.forEach((field) => field.addEventListener("change", updateForm));
+      updateForm();
+    })();
+  </script>
+
+  {% if most_viewed %}
+    <div id="estadisticas" class="most-viewed-card">
+      <div>
+        <p class="eyebrow eyebrow-dark">PRODUCTO MÁS VISTO</p>
+        <h2>{{ most_viewed.name }}</h2>
+      </div>
+      <strong>{{ most_viewed.views|default(0) }} <small>vistas</small></strong>
+    </div>
+  {% endif %}
+
+  <div id="productos" class="admin-list">
+    <div class="section-heading">
+      <div>
+        <h2>Productos actuales</h2>
+        {% if active_admin_section != 'Todos' %}<p class="admin-list-filter">Mostrando productos de {{ active_admin_section|section_label }} · <a href="{{ url_for('admin') }}#productos">Ver todos</a></p>{% endif %}
+      </div>
+      <span class="result-count">{{ products|length }} PRODUCTOS</span>
+    </div>
+    <nav class="admin-catalog-filters" aria-label="Filtrar productos por categoría">
+      <span class="admin-catalog-filter-label">Categoría:</span>
+      <a class="admin-catalog-filter {% if active_admin_category == 'Todos' %}is-active{% endif %}" href="{{ url_for('admin', seccion=active_admin_section if active_admin_section != 'Todos' else None) }}#productos">Todas</a>
+      {% for category in categories %}
+        <a class="admin-catalog-filter {% if active_admin_category == category %}is-active{% endif %}" href="{{ url_for('admin', seccion=active_admin_section if active_admin_section != 'Todos' else None, tipo=category) }}#productos">{{ category }}</a>
+      {% endfor %}
+    </nav>
+    {% for product in products %}
+      <div class="admin-product-row">
+        <span class="admin-product-thumb"><img src="{{ product.image }}" alt="Imagen de {{ product.name }}" loading="lazy" onerror="this.onerror=null;this.src='{{ url_for('static', filename='logo.png') }}';"></span>
+        <span class="admin-product-id">FR-0{{ product.id }}</span>
+        <strong>{{ product.name }}</strong>
+        <span>{{ product.category }}</span>
+        <span>{{ product.get('sections', [product.section])|map('section_label')|join(' y ') }}</span>
+        <span>{% if product.get('price_on_request') %}Consultar{% else %}{{ product.price|mxn }} MXN{% endif %}</span>
+        <span>{{ product.get('stock', 0) }} disponibles</span>
+        <span>{{ product.views|default(0) }} vistas</span>
+        <span class="product-status-badge {% if not product.get('active', true) %}is-inactive{% endif %}">{{ 'Activo' if product.get('active', true) else 'Desactivado' }}</span>
+        <span class="admin-product-actions">
+          <a class="admin-action" href="{{ url_for('edit_product', product_id=product.id) }}">Editar</a>
+          <form action="{{ url_for('toggle_product_status', product_id=product.id) }}" method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="admin-action" type="submit">{{ 'Desactivar' if product.get('active', true) else 'Activar' }}</button>
+          </form>
+          <form action="{{ url_for('delete_product', product_id=product.id) }}" method="post" onsubmit="return confirm('¿Eliminar este producto de la tienda?');">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="admin-action admin-delete" type="submit">Eliminar</button>
+          </form>
+        </span>
+      </div>
+    {% endfor %}
+  </div>
+  <div id="desactivados" class="admin-list admin-disabled-list">
+    <div class="section-heading">
+      <div>
+        <h2>Productos desactivados</h2>
+        <p class="admin-list-filter">Estos productos siguen guardados, pero no aparecen en la tienda ni se pueden comprar.</p>
+      </div>
+      <span class="result-count">{{ disabled_products|length }} PRODUCTOS</span>
+    </div>
+    {% if disabled_products %}
+      {% for product in disabled_products %}
+        <div class="admin-product-row admin-disabled-product-row">
+          <span class="admin-product-thumb"><img src="{{ product.image }}" alt="Imagen de {{ product.name }}" loading="lazy" onerror="this.onerror=null;this.src='{{ url_for('static', filename='logo.png') }}';"></span>
+          <span class="admin-product-id">FR-0{{ product.id }}</span>
+          <strong>{{ product.name }}</strong>
+          <span>{{ product.category }}</span>
+          <span>{{ product.get('sections', [product.section])|map('section_label')|join(' y ') }}</span>
+          <span>{{ product.get('stock', 0) }} disponibles</span>
+          <span class="product-status-badge is-inactive">Desactivado</span>
+          <span class="admin-product-actions">
+            <a class="admin-action" href="{{ url_for('edit_product', product_id=product.id) }}">Editar</a>
+            <form action="{{ url_for('toggle_product_status', product_id=product.id) }}" method="post">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button class="admin-action" type="submit">Activar</button>
+            </form>
+          </span>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p class="admin-empty-state">No hay productos desactivados.</p>
+    {% endif %}
+  </div>
+  <div id="papelera" class="admin-list admin-trash-list">
+    <div class="section-heading">
+      <div>
+        <h2>Papelera del catálogo</h2>
+        <p class="admin-list-filter">Los productos eliminados se conservan durante 30 días y después se borran automáticamente.</p>
+      </div>
+      <span class="result-count">{{ deleted_products|length }} PRODUCTOS</span>
+    </div>
+    {% if deleted_products %}
+      {% for entry in deleted_products %}
+        {% set product = entry.product %}
+        <div class="admin-product-row admin-deleted-product-row">
+          <span class="admin-product-thumb"><img src="{{ product.image }}" alt="Imagen de {{ product.name }}" loading="lazy" onerror="this.onerror=null;this.src='{{ url_for('static', filename='logo.png') }}';"></span>
+          <span class="admin-product-id">FR-0{{ product.id }}</span>
+          <strong>{{ product.name }}</strong>
+          <span>{{ product.category }}</span>
+          <span>Eliminado: {{ entry.deleted_at|replace('T', ' ') }}</span>
+          <span>Disponible {{ entry.days_left }} {% if entry.days_left == 1 %}día{% else %}días{% endif %}</span>
+          <span class="admin-product-actions">
+            <form action="{{ url_for('restore_deleted_product', product_id=product.id) }}" method="post">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button class="admin-action" type="submit">Restaurar</button>
+            </form>
+            <form action="{{ url_for('permanently_delete_deleted_product', product_id=product.id) }}" method="post" onsubmit="return confirm('¿Eliminar definitivamente este producto? Ya no se podrá restaurar.');">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button class="admin-action admin-delete" type="submit">Eliminar definitivamente</button>
+            </form>
+          </span>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p class="admin-empty-state">No hay productos eliminados recientemente.</p>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
+

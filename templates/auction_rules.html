@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Reglas de subasta | FR BEISSHOP{% endblock %}
+{% block content %}
+<section class="auction-rules-page section-wrap">
+  <div class="auction-heading auction-rules-heading">
+    <p class="eyebrow eyebrow-dark">FR BEISSHOP / INFORMACI&Oacute;N</p>
+    <h1>Reglas de la subasta</h1>
+    <p>Lee c&oacute;mo participar, c&oacute;mo se determina la puja ganadora y qu&eacute; sucede al cerrar cada art&iacute;culo.</p>
+    <a class="button button-dark" href="{{ url_for('auction') }}">Ver subastas activas</a>
+  </div>
+
+  <div class="auction-rules-grid">
+    <button class="auction-rule-card" type="button" data-auction-rule aria-haspopup="dialog" aria-controls="auction-rule-dialog">
+      <span class="auction-rule-number">01</span>
+      <span class="auction-rule-title">Inicia sesi&oacute;n para pujar</span>
+      <p>Necesitas una cuenta de FR BEISSHOP. Cada oferta queda registrada con tu cuenta, el importe y la hora.</p>
+    </button>
+    <button class="auction-rule-card" type="button" data-auction-rule aria-haspopup="dialog" aria-controls="auction-rule-dialog">
+      <span class="auction-rule-number">02</span>
+      <span class="auction-rule-title">Revisa el importe m&iacute;nimo</span>
+      <p>Cada art&iacute;culo muestra su precio inicial y su incremento m&iacute;nimo. La cantidad que puedes ofertar aparece en el formulario antes de enviar la puja.</p>
+    </button>
+    <button class="auction-rule-card" type="button" data-auction-rule aria-haspopup="dialog" aria-controls="auction-rule-dialog">
+      <span class="auction-rule-number">03</span>
+      <span class="auction-rule-title">Respeta la hora de cierre</span>
+      <p>La fecha y hora indicadas en la p&aacute;gina determinan el cierre. El sistema no acepta pujas despu&eacute;s de ese momento.</p>
+    </button>
+    <button class="auction-rule-card" type="button" data-auction-rule aria-haspopup="dialog" aria-controls="auction-rule-dialog">
+      <span class="auction-rule-number">04</span>
+      <span class="auction-rule-title">Gana la oferta v&aacute;lida m&aacute;s alta</span>
+      <p>Al cierre, gana quien haya realizado la puja v&aacute;lida m&aacute;s alta. Si no hubo pujas, el art&iacute;culo queda sin ganador.</p>
+    </button>
+    <button class="auction-rule-card auction-rule-card-featured" type="button" data-auction-rule aria-haspopup="dialog" aria-controls="auction-rule-dialog">
+      <span class="auction-rule-number">05</span>
+      <span class="auction-rule-title">Completa el pago dentro de 3 d&iacute;as</span>
+      <p>El ganador recibe instrucciones por correo y un recordatorio 24 horas antes del vencimiento cuando las notificaciones est&aacute;n activas. El enlace de pago es personal y vence a los 3 d&iacute;as. Si el ganador no paga, se ofrece el art&iacute;culo una sola vez al siguiente postor v&aacute;lido, quien tambi&eacute;n tiene 3 d&iacute;as para pagar. Los enlaces enviados antes del 28 de octubre de 2026 conservan la fecha que indic&oacute; ese aviso. Si no hay segundo postor o este tampoco paga, el art&iacute;culo queda disponible para que FR BEISSHOP decida si lo vuelve a publicar.</p>
+    </button>
+    <button class="auction-rule-card" type="button" data-auction-rule aria-haspopup="dialog" aria-controls="auction-rule-dialog">
+      <span class="auction-rule-number">06</span>
+      <span class="auction-rule-title">Confirma el total antes de pagar</span>
+      <p>El importe ganador corresponde al art&iacute;culo. El costo de env&iacute;o se muestra en el proceso de pago; la entrega personal en Mexicali aparece como opci&oacute;n sin costo cuando est&aacute; disponible.</p>
+    </button>
+  </div>
+
+  <dialog class="auction-rule-dialog" id="auction-rule-dialog" aria-labelledby="auction-rule-dialog-title">
+    <div class="auction-rule-dialog-content">
+      <button class="auction-rule-dialog-close" type="button" aria-label="Cerrar">&times;</button>
+      <p class="eyebrow eyebrow-dark">REGLAS DE LA SUBASTA</p>
+      <h2 id="auction-rule-dialog-title" data-auction-rule-dialog-title></h2>
+      <p class="auction-rule-dialog-text" data-auction-rule-dialog-text></p>
+      <button class="button button-dark" type="button" data-auction-rule-dialog-dismiss>Entendido</button>
+    </div>
+  </dialog>
+
+  <aside class="auction-rules-note">
+    <strong>Transparencia de las pujas</strong>
+    <p>El historial de la subasta muestra el nombre de perfil, el importe y la hora de cada puja. El formulario no permite cancelar una oferta ya registrada; revisa la cantidad antes de enviarla.</p>
+  </aside>
+  <p class="auction-rules-footer">Si tienes dudas sobre un art&iacute;culo o el resultado, <a href="{{ url_for('contact_page') }}">contacta a FR BEISSHOP</a>.</p>
+</section>
+<script src="{{ url_for('static', filename='auction-rules.js') }}" defer></script>
+{% endblock %}
+

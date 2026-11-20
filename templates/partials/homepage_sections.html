@@ -1,0 +1,17 @@
+{% set visible_home_sections = home_content.sections|selectattr('enabled')|selectattr('position', 'equalto', home_section_position)|list %}
+{% if visible_home_sections %}
+  <div class="home-content-sections section-wrap">
+    {% for section in visible_home_sections %}
+      <section class="home-content-block{% if not section.image_url %} is-text-only{% endif %}" id="home-section-{{ section.id }}" aria-labelledby="home-section-{{ section.id }}-title">
+        <div>
+          {% if section.eyebrow %}<p class="home-content-eyebrow">{{ section.eyebrow }}</p>{% endif %}
+          <h2 id="home-section-{{ section.id }}-title">{{ section.title }}</h2>
+          {% if section.body %}<p class="home-content-body">{{ section.body }}</p>{% endif %}
+          {% if section.button_label and section.button_url %}<a class="home-content-action" href="{{ section.button_url }}">{{ section.button_label }} <span aria-hidden="true">→</span></a>{% endif %}
+        </div>
+        {% if section.image_url %}<img class="home-content-image" src="{{ section.image_url }}" alt="{{ section.image_alt or section.title }}" loading="lazy" decoding="async">{% endif %}
+      </section>
+    {% endfor %}
+  </div>
+{% endif %}
+

@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}Ayuda y compras | FR BEISSHOP{% endblock %}
+{% block content %}
+<section class="help-page section-wrap">
+  <p class="eyebrow eyebrow-dark">FR BEISSHOP / CENTRO DE AYUDA</p>
+  <div class="help-heading">
+    <div>
+      <h1>Compra con confianza.</h1>
+      <p>Encuentra tu equipo, personal&iacute;zalo y completa tu pedido paso a paso.</p>
+      <div class="help-heading-actions">
+        <a class="button button-dark" href="{{ url_for('index') }}">Explorar productos <span aria-hidden="true">&#8594;</span></a>
+        <a class="help-heading-secondary" href="{{ url_for('auction') }}">Ver subastas</a>
+      </div>
+    </div>
+    <span class="help-heading-mark" aria-label="Envíos desde Mexicali a México">MXL<br><small>M&Eacute;XICO</small></span>
+  </div>
+
+  <div class="help-grid" aria-label="Pasos para comprar">
+    <a class="help-card help-card-clickable help-step-card" href="{{ url_for('index') }}">
+      <span class="help-card-number">PASO 01</span>
+      <h2>Encuentra tu equipo</h2>
+      <p>Explora las secciones de b&eacute;isbol y s&oacute;ftbol, filtra el cat&aacute;logo y abre un producto para ver detalles, precio y existencias.</p>
+      <strong class="help-step-link">Explorar productos <span aria-hidden="true">&#8594;</span></strong>
+    </a>
+    <a class="help-card help-card-clickable help-step-card" href="{{ url_for('our_brand') }}">
+      <span class="help-card-number">PASO 02</span>
+      <h2>Personaliza tu bat</h2>
+      <p>En los modelos disponibles, elige colores, agrega o quita el grip y escribe el nombre o n&uacute;mero que quieras.</p>
+      <strong class="help-step-link">Ver nuestra marca <span aria-hidden="true">&#8594;</span></strong>
+    </a>
+    <a class="help-card help-card-clickable help-step-card" href="{{ url_for('cart') }}">
+      <span class="help-card-number">PASO 03</span>
+      <h2>Prepara tu pedido</h2>
+      <p>Revisa tu carrito, indica tus datos de entrega y confirma el costo total antes de continuar.</p>
+      <strong class="help-step-link">Ir al carrito <span aria-hidden="true">&#8594;</span></strong>
+    </a>
+    <a class="help-card help-card-clickable help-step-card" href="{{ url_for('cart') if online_payment_enabled else url_for('contact_page') }}">
+      <span class="help-card-number">PASO 04</span>
+      {% if online_payment_enabled %}
+        <h2>Paga de forma segura</h2>
+        <p>Cuando Stripe est&eacute; disponible, podr&aacute;s completar el pago en su plataforma segura y recibir la confirmaci&oacute;n de tu pedido.</p>
+        <strong class="help-step-link">Revisar carrito <span aria-hidden="true">&#8594;</span></strong>
+      {% else %}
+        <h2>Confirma tu pedido</h2>
+        <p>Escr&iacute;benos para confirmar existencias, entrega y las opciones de pago disponibles.</p>
+        <strong class="help-step-link">Contactar a la tienda <span aria-hidden="true">&#8594;</span></strong>
+      {% endif %}
+    </a>
+  </div>
+
+  <section class="help-details" aria-label="Preguntas frecuentes">
+    <div class="help-details-heading">
+      <p class="eyebrow eyebrow-dark">RESPUESTAS R&Aacute;PIDAS</p>
+      <h2>Lo que necesitas saber</h2>
+      <p>Abre una pregunta para ver la informaci&oacute;n.</p>
+    </div>
+    <div class="help-faq-list">
+      <details open>
+        <summary>&iquest;Desde d&oacute;nde se env&iacute;an los pedidos?</summary>
+        <p>Los pedidos salen desde Mexicali, Baja California. El costo y el tiempo de env&iacute;o se calculan con tu c&oacute;digo postal durante la compra.</p>
+      </details>
+      <details>
+        <summary>&iquest;Los precios y las existencias se actualizan?</summary>
+        <p>El cat&aacute;logo muestra los precios e inventario registrados. La disponibilidad se confirma cuando preparas tu pedido.</p>
+      </details>
+      <details>
+        <summary>&iquest;C&oacute;mo funcionan las subastas?</summary>
+        <p>Consulta la hora de cierre, inicia sesi&oacute;n y env&iacute;a una puja que cumpla el importe m&iacute;nimo. <a href="{{ url_for('auction_rules') }}">Lee todas las reglas de subasta.</a></p>
+      </details>
+      <details>
+        <summary>&iquest;Qu&eacute; hago si necesito un cambio?</summary>
+        <p>Revisa los requisitos y plazos en la <a href="{{ url_for('returns_page') }}">pol&iacute;tica de cambios y devoluciones</a> antes de enviar el art&iacute;culo.</p>
+      </details>
+      <details>
+        <summary>&iquest;C&oacute;mo se protege mi informaci&oacute;n de pago?</summary>
+        <p>Cuando el pago en l&iacute;nea est&aacute; disponible, se procesa en Stripe Checkout. Consulta tambi&eacute;n nuestro <a href="{{ url_for('privacy_page') }}">aviso de privacidad</a>.</p>
+      </details>
+    </div>
+  </section>
+
+  <section class="help-contact">
+    <div>
+      <p class="eyebrow">ATENCI&Oacute;N PERSONAL</p>
+      <h2>&iquest;Te ayudamos a elegir?</h2>
+      <p>Escr&iacute;benos para resolver dudas sobre medidas, colores, existencias o tu pedido.</p>
+    </div>
+    {% if whatsapp_url %}
+      <a class="button button-light" href="{{ whatsapp_url }}" target="_blank" rel="noopener noreferrer">Contactar por WhatsApp <span aria-hidden="true">&#8599;</span></a>
+    {% else %}
+      <a class="button button-light" href="{{ url_for('contact_page') }}">Ver opciones de contacto <span aria-hidden="true">&#8594;</span></a>
+    {% endif %}
+  </section>
+</section>
+{% endblock %}
+

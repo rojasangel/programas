@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Actividad administrativa | FR BEISSHOP{% endblock %}
+{% block content %}
+<section class="admin-page section-wrap">
+  <div class="admin-heading">
+    <div>
+      <p class="eyebrow eyebrow-dark">FR BEISSHOP / SEGURIDAD</p>
+      <h1>Actividad administrativa</h1>
+      <p class="admin-intro">Historial de cambios realizados desde el panel de administración.</p>
+    </div>
+    <div class="admin-heading-actions">
+      <a class="admin-action" href="{{ url_for('export_admin_activity') }}">Exportar CSV</a>
+      <a class="admin-cancel" href="{{ url_for('admin_menu') }}">Volver al menú</a>
+    </div>
+  </div>
+  {% if activity %}
+    <div class="admin-activity-list">
+      {% for item in activity %}
+        <article class="admin-activity-row">
+          <div><strong>{{ item.action }}</strong><span>{{ item.entity }}{% if item.entity_id %} #{{ item.entity_id }}{% endif %}</span></div>
+          <p>{{ item.detail }}</p>
+          <time datetime="{{ item.created_at }}">{{ item.created_at }}</time>
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="admin-empty-state">Todavía no hay cambios registrados.</p>
+  {% endif %}
+</section>
+{% endblock %}
+

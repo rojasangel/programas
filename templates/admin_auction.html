@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+{% set is_editing = editing|default(false) %}
+{% block title %}{% if is_editing %}Editar subasta{% else %}Administrar subasta{% endif %} | FR BEISSHOP{% endblock %}
+{% block content %}
+<section class="admin-page section-wrap auction-admin-page">
+  <div class="admin-heading">
+    <div>
+      <p class="eyebrow eyebrow-dark">FR BEISSHOP / ADMINISTRACI&Oacute;N / SUBASTA</p>
+      <h1>{% if is_editing %}Editar subasta{% else %}Administrar subasta{% endif %}</h1>
+      <p class="admin-intro">Publica art&iacute;culos, controla las pujas y define el cierre de cada oportunidad.</p>
+    </div>
+    <div class="admin-heading-actions">
+      <a class="back-link" href="{{ url_for('admin_menu') }}">&larr; Men&uacute; de administraci&oacute;n</a>
+      <form action="{{ url_for('admin_logout') }}" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="text-button" type="submit">Cerrar sesi&oacute;n</button>
+      </form>
+    </div>
+  </div>
+
+  <form class="admin-form auction-admin-form" action="{% if is_editing %}{{ url_for('edit_auction', auction_id=auction.id) }}{% else %}{{ url_for('admin_auction') }}{% endif %}" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label>
+      Art&iacute;culo
+      <input type="text" name="nombre" required maxlength="120" value="{{ auction.name if is_editing else '' }}" placeholder="Ej. Bat de madera personalizado">
+    </label>
+    <label>
+      Precio inicial <span>(MXN)</span>
+      <input type="number" name="precio" required min="0.01" step="0.01" value="{{ auction.price if is_editing else '' }}" placeholder="1500.00">
+    </label>
+    <label>
+      Incremento m&iacute;nimo <span>(MXN)</span>
+      <input type="number" name="incremento" required min="0.01" step="0.01" value="{{ auction.min_increment if is_editing else '50' }}">
+    </label>
+    <label>
+      Imagen
+      <input type="file" name="imagen_archivo" accept="image/*">
+      {% if is_editing %}<span>Deja vac&iacute;o para conservar la imagen actual.</span>{% endif %}
+    </label>
+    <label>
+      Descripci&oacute;n
+      <textarea name="descripcion" required rows="5" maxlength="1000" placeholder="Describe el art&iacute;culo de la subasta.">{{ auction.description if is_editing else '' }}</textarea>
+    </label>
+    <label>
+      Fecha y hora de cierre
+      <input type="datetime-local" name="termina_en" required value="{{ auction.ends_at if is_editing else '' }}">
+    </label>
+    <div class="admin-form-section-title">Datos del paquete para la gu&iacute;a</div>
+    <div class="admin-form-grid admin-form-grid-four">
+      <label>
+        Peso (kg)
+        <input type="number" name="peso_paquete" required min="0.01" max="1000" step="0.01" value="{{ auction.package_weight_kg if is_editing else '0.5' }}">
+      </label>
+      <label>
+        Largo (cm)
+        <input type="number" name="largo_paquete" required min="1" max="500" step="0.1" value="{{ auction.package_length_cm if is_editing else '30' }}">
+      </label>
+      <label>
+        Ancho (cm)
+        <input type="number" name="ancho_paquete" required min="1" max="500" step="0.1" value="{{ auction.package_width_cm if is_editing else '20' }}">
+      </label>
+      <label>
+        Alto (cm)
+        <input type="number" name="alto_paquete" required min="1" max="500" step="0.1" value="{{ auction.package_height_cm if is_editing else '15' }}">
+      </label>
+    </div>
+    <p class="admin-form-hint">Estos datos se usan para cotizar el env&iacute;o y crear la gu&iacute;a con Skydropx.</p>
+    <button class="button button-dark" type="submit">{% if is_editing %}Guardar cambios{% else %}Agregar art&iacute;culo a la subasta{% endif %}</button>
+    {% if is_editing %}<a class="admin-cancel" href="{{ url_for('admin_auction') }}">Cancelar edici&oacute;n</a>{% endif %}
+  </form>
+
+  {% set live_stats = namespace(active=0, closed=0, bids=0) %}
+  {% for auction_item in auctions %}
+    {% if auction_item.closed %}{% set live_stats.closed = live_stats.closed + 1 %}{% else %}{% set live_stats.active = live_stats.active + 1 %}{% endif %}
+    {% set live_stats.bids = live_stats.bids + auction_item.bid_count %}
+  {% endfor %}
+  <div class="auction-admin-live" id="articulos-subasta" data-admin-auction-dashboard data-admin-auction-endpoint="{{ url_for('admin_auction_data') }}">
+    <div class="auction-admin-live-heading">
+      <div>
+        <p class="eyebrow eyebrow-dark">MONITOR EN VIVO</p>
+        <h2>Seguimiento de subastas</h2>
+        <p>Consulta las pujas, el precio l&iacute;der y el estado de cada art&iacute;culo sin recargar la p&aacute;gina.</p>
+      </div>
+      <div class="auction-admin-live-status" aria-live="polite">
+        <span><i></i>En vivo</span>
+        <small>Actualizado <b data-admin-last-update>ahora</b></small>
+      </div>
+    </div>
+    <div class="auction-admin-summary" aria-label="Resumen de subastas">
+      <div><span>Subastas activas</span><strong data-admin-active-count>{{ live_stats.active }}</strong></div>
+      <div><span>Subastas cerradas</span><strong data-admin-closed-count>{{ live_stats.closed }}</strong></div>
+      <div><span>Pujas recibidas</span><strong data-admin-total-bids>{{ live_stats.bids }}</strong></div>
+      <div><span>Art&iacute;culos</span><strong data-admin-auction-count>{{ auctions|length }}</strong></div>
+    </div>
+    <div class="auction-admin-list-heading">
+      <div>
+        <p class="eyebrow eyebrow-dark">ART&Iacute;CULOS PUBLICADOS</p>
+        <h2>Panel de subastas</h2>
+      </div>
+      <span class="result-count">{{ auctions|length }} art&iacute;culo{% if auctions|length != 1 %}s{% endif %}</span>
+    </div>
+    {% if auctions %}
+      <div class="auction-admin-grid">
+        {% for auction_item in auctions %}
+          <article class="auction-admin-card{% if auction_item.closed %} is-closed{% endif %}" data-auction-card data-auction-id="{{ auction_item.id }}" data-auction-deadline="{{ auction_item.ends_at }}">
+            <img src="{{ auction_item.image }}" alt="{{ auction_item.name }}">
+            <div class="auction-admin-card-body">
+              <div class="auction-admin-card-topline">
+                <p class="eyebrow eyebrow-dark">SUBASTA</p>
+                <span class="auction-admin-state{% if not auction_item.closed %} is-live{% endif %}" data-auction-state>{% if auction_item.closed %}Cerrada{% else %}Activa{% endif %}</span>
+              </div>
+              <h3>{{ auction_item.name }}</h3>
+              {% if auction_item.closed %}<button class="auction-admin-expand" type="button" data-auction-toggle aria-expanded="false">Ver informaci&oacute;n</button>{% endif %}
+              <p class="auction-admin-description">{{ auction_item.description }}</p>
+              <div class="auction-admin-metrics">
+                <div><span>Precio actual</span><strong data-auction-current-price>{{ auction_item.current_price|mxn }} MXN</strong></div>
+                <div><span>Va ganando</span><strong data-auction-leader-name>{% if auction_item.leader %}{{ auction_item.leader.user_name }}{% else %}Sin pujas{% endif %}</strong></div>
+                <div><span>Puja l&iacute;der</span><strong data-auction-leader-amount>{% if auction_item.leader %}{{ auction_item.leader.amount|mxn }}{% else %}0.00{% endif %} MXN</strong></div>
+                <div><span>Total de pujas</span><strong data-auction-bid-count>{{ auction_item.bid_count }}</strong></div>
+              </div>
+              <div class="auction-admin-deadline">
+                <span>Finaliza: {{ auction_item.ends_at|replace('T', ' ') }}</span>
+                <strong data-auction-remaining>{% if auction_item.closed %}Subasta cerrada{% else %}Calculando...{% endif %}</strong>
+              </div>
+              <div class="auction-admin-bids" data-auction-bid-history>
+                <div class="auction-admin-bids-heading"><h4>Historial de pujas</h4><span data-auction-bid-count-label>{{ auction_item.bid_count }} puja{% if auction_item.bid_count != 1 %}s{% endif %}</span></div>
+                {% if auction_item.bids %}
+                  <ul data-auction-bids>
+                    {% for bid in auction_item.bids %}
+                      <li><span><strong>{{ bid.user_name }}</strong>{% if bid.created_at %}<small>{{ bid.created_at }}</small>{% endif %}</span><b>{{ bid.amount|mxn }} MXN</b></li>
+                    {% endfor %}
+                  </ul>
+                {% else %}
+                  <p data-auction-bids-empty>A&uacute;n no hay pujas.</p>
+                  <ul data-auction-bids hidden></ul>
+                {% endif %}
+              </div>
+              <div class="admin-form-actions">
+                <a class="admin-action" href="{{ url_for('edit_auction', auction_id=auction_item.id) }}">Editar</a>
+                <form action="{{ url_for('delete_auction', auction_id=auction_item.id) }}" method="post">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <button class="text-button text-button-danger" type="submit">Retirar</button>
+                </form>
+              </div>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="auction-admin-empty">Todav&iacute;a no hay art&iacute;culos en la subasta.</p>
+    {% endif %}
+  </div>
+</section>
+<script src="{{ url_for('static', filename='admin-auction.js') }}" defer></script>
+{% endblock %}
+

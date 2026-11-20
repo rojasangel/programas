@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% from 'partials/homepage_blocks.html' import home_style, home_block with context %}
+{% block content %}
+{% set is_homepage = active_category == 'Todos' %}
+<link rel="stylesheet" href="{{ url_for('static', filename='homepage-layout.css', v='visual2') }}">
+{% if is_homepage %}
+  {% if homepage_preview %}
+    <section class="home-preview-banner section-wrap" role="status"><p><strong>Vista previa del borrador.</strong> Este contenido todavía no se ha publicado.</p><a href="{{ url_for('admin_homepage') }}">Volver al editor</a></section>
+  {% endif %}
+  <div data-home-blocks>
+  {% for key in home_content.block_order %}
+    {% if key == 'catalog' %}
+      {% include 'partials/homepage_catalog.html' %}
+    {% elif key in ['hero', 'callout'] %}
+      {{ home_block(home_content[key], key) }}
+    {% elif key.startswith('section:') %}
+      {% for block in home_content.sections if block.id == key.split(':', 1)[1] %}{{ home_block(block, key) }}{% endfor %}
+    {% elif key.startswith('announcement:') %}
+      {% for block in home_content.announcements if block.id == key.split(':', 1)[1] %}{{ home_block(block, key) }}{% endfor %}
+    {% endif %}
+  {% endfor %}
+  </div>
+  {% if not home_content.hero.enabled %}<h1 class="visually-hidden">FR BEISSHOP</h1>{% endif %}
+{% else %}
+  {% include 'partials/homepage_catalog.html' %}
+  <section class="shipping-callout">
+    <div class="shipping-stamp" aria-hidden="true">FR<br><span>MX</span></div>
+    <div><p class="eyebrow">¿ESTÁS LEJOS DE MEXICALI?</p><h2>El juego llega hasta ti.</h2></div>
+    <p>Preparamos pedidos para toda la República. El costo y tiempo de envío se confirman según tu código postal.</p>
+  </section>
+{% endif %}
+{% if is_homepage and not homepage_editing and home_content.hero.enabled and home_content.hero.images|length > 1 %}<script src="{{ url_for('static', filename='homepage-gallery.js', v='1') }}" defer></script>{% endif %}
+{% endblock %}
+

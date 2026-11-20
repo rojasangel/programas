@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Pago de subasta | FR BEISSHOP{% endblock %}
+{% block content %}
+<section class="auction-checkout-page section-wrap">
+  <div class="auction-checkout-heading">
+    <p class="eyebrow eyebrow-dark">FR BEISSHOP / PAGO DE SUBASTA</p>
+    <h1>Completa tu compra</h1>
+    <p>Ganaste esta subasta. Confirma tus datos de entrega y continúa con el pago seguro en Stripe.</p>
+  </div>
+  <div class="auction-checkout-layout">
+    <article class="auction-checkout-summary">
+      <img src="{{ auction.image }}" alt="{{ auction.name }}">
+      <div>
+        <p class="eyebrow eyebrow-dark">SUBASTA GANADA</p>
+        <h2>{{ auction.name }}</h2>
+        <p>{{ auction.description }}</p>
+        <strong>{{ winner.amount|mxn }} MXN</strong>
+      </div>
+    </article>
+    {% if existing_order %}
+      <article class="auction-checkout-existing">
+        <p class="eyebrow eyebrow-dark">PEDIDO #{{ existing_order.id }}</p>
+        <h2>Tu pago ya fue preparado</h2>
+        <p>Este enlace ya se utilizó para generar el pedido. Estado actual: <strong>{{ existing_order.status }}</strong>.</p>
+        {% if existing_payment_url %}<a class="button button-dark" href="{{ existing_payment_url }}">Continuar con Stripe</a>{% endif %}
+        {% if existing_order.shipping_label_url %}<a class="button button-dark" href="{{ existing_order.shipping_label_url }}" target="_blank" rel="noopener noreferrer">Descargar guía</a>{% endif %}
+        <a class="back-link" href="{{ url_for('index') }}">Volver a la tienda</a>
+      </article>
+    {% else %}
+      <form class="checkout-form auction-checkout-form" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <h2>Datos de entrega</h2>
+        <label>Nombre completo<input name="nombre" required maxlength="100" value="{{ profile.name|default('', true) }}"></label>
+        <label>Correo para confirmar el pedido<input type="email" name="correo" required value="{{ profile.email|default('', true) }}"></label>
+        <label>Teléfono de contacto<input name="telefono" required maxlength="20" value="{{ profile.phone|default('', true) }}"></label>
+        <label>Dirección<input name="direccion" required maxlength="180" value="{{ profile.address|default('', true) }}"></label>
+        <label>Colonia<input name="colonia" required maxlength="100" value="{{ profile.neighborhood|default('', true) }}"></label>
+        <div class="checkout-form-grid">
+          <label>Ciudad<input name="ciudad" required maxlength="80" value="{{ profile.city|default('', true) }}"></label>
+          <label>Estado<input name="estado" required maxlength="80" value="{{ profile.state|default('', true) }}"></label>
+          <label>Código postal<input name="codigo_postal" required inputmode="numeric" pattern="[0-9]{5}" maxlength="5" value="{{ profile.postal_code|default('', true) }}"></label>
+        </div>
+        <label>Entrega
+          <select name="metodo_entrega">
+            <option value="envio">Envío a domicilio{% if not shipping_enabled %} (estimado {{ shipping_estimate|mxn }} MXN){% endif %}</option>
+            <option value="local">Entrega personal en Mexicali (sin costo)</option>
+          </select>
+        </label>
+        <p class="auction-checkout-note">{% if shipping_enabled %}Al enviar el formulario cotizaremos Skydropx y usaremos la tarifa disponible más económica. Después del pago se creará la guía automáticamente.{% else %}El envío se cobrará con el estimado configurado. Para crear la guía automáticamente, el administrador debe configurar Skydropx.{% endif %}</p>
+        <label class="legal-consent">
+          <input type="checkbox" name="legal_accepted" value="1" required>
+          <span>Confirmo que le&iacute; los <a href="{{ url_for('terms_page') }}" target="_blank" rel="noopener">T&eacute;rminos de compra</a>, las <a href="{{ url_for('auction_rules') }}" target="_blank" rel="noopener">Reglas de subasta</a> y el <a href="{{ url_for('privacy_page') }}" target="_blank" rel="noopener">Aviso de privacidad</a>.</span>
+        </label>
+        <button class="button button-dark" type="submit">Continuar al pago con Stripe</button>
+      </form>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
+

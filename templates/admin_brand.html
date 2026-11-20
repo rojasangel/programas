@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Nuestra marca | Administración{% endblock %}
+{% block content %}
+<section class="admin-page section-wrap admin-brand-page">
+  <div class="admin-heading">
+    <div>
+      <p class="eyebrow eyebrow-dark">FR BEISSHOP / ADMINISTRACIÓN</p>
+      <h1>Nuestra marca</h1>
+      <p class="admin-intro">Selecciona los productos que aparecerán en esta sección de la tienda.</p>
+    </div>
+    <a class="admin-action" href="{{ url_for('our_brand') }}">Ver sección</a>
+  </div>
+
+  <form class="admin-brand-add-form" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="accion" value="agregar">
+    <div class="admin-brand-toolbar">
+      <div><strong>Agregar producto a Nuestra marca</strong><span>Captura los datos que verá el cliente.</span></div>
+    </div>
+    <div class="admin-brand-add-fields">
+      <label>Imagen
+        <input name="imagen_archivo" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
+      </label>
+      <label>Nombre
+        <input name="nombre" maxlength="140" required>
+      </label>
+      <label>Precio en MXN
+        <input name="precio" type="number" min="1" step="0.01" required>
+      </label>
+      <label class="admin-wide">Descripción
+        <textarea name="descripcion" rows="3" maxlength="500" required></textarea>
+      </label>
+    </div>
+    <button class="button button-dark" type="submit">Agregar producto</button>
+  </form>
+
+  <form class="admin-brand-form" method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="admin-brand-toolbar">
+      <strong>Productos disponibles</strong>
+      <span>Marca los que quieras mostrar.</span>
+    </div>
+    <div class="admin-brand-list">
+      {% for product in products %}
+        <label class="admin-brand-product">
+          <input type="checkbox" name="productos" value="{{ product.id }}" {% if product.get('brand_featured') %}checked{% endif %}>
+          <span class="admin-brand-product-image"><img src="{{ product.image }}" alt="" loading="lazy" onerror="this.onerror=null;this.src='{{ url_for('static', filename='logo.png') }}';"></span>
+          <span class="admin-brand-product-copy"><strong>{{ product.name }}</strong><small>{{ product.category }} · {{ product.get('sections', [product.section])|map('section_label')|join(' y ') }} · {{ product.price|mxn }} MXN</small></span>
+          <span class="admin-brand-product-stock">{{ product.get('stock', 0) }} disponibles</span>
+        </label>
+      {% else %}
+        <p class="admin-empty-state">No hay productos registrados.</p>
+      {% endfor %}
+    </div>
+    <button class="button button-dark" type="submit">Guardar selección</button>
+  </form>
+</section>
+{% endblock %}
+

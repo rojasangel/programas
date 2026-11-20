@@ -1,0 +1,12 @@
+FR BEISSHOP — RESPALDO DE SEGURIDAD
+Fecha: 2026-11-19
+
+RESPALDO COMPLETO
+Incluye el código, plantillas, imágenes, contenido, base de datos y configuraciones locales necesarias para restaurar la tienda.
+Contiene credenciales privadas. No compartir públicamente.
+
+RESPALDO DE CÓDIGO
+Incluye el código, plantillas, imágenes y contenido, pero excluye credenciales privadas y la base de datos de clientes.
+
+Para restaurar el respaldo completo, extrae el ZIP en una carpeta nueva y conserva los archivos de configuración privados únicamente en el equipo del administrador.
+

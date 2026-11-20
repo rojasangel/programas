@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Inicio con Google | FR BEISSHOP{% endblock %}
+{% block content %}
+<section class="admin-page section-wrap admin-google-page">
+  <div class="admin-heading">
+    <div>
+      <p class="eyebrow eyebrow-dark">FR BEISSHOP / ADMINISTRACIÓN / GOOGLE</p>
+      <h1>Inicio con Google</h1>
+      <p class="admin-intro">Activa el botón para que tus clientes creen una cuenta o inicien sesión con Google.</p>
+    </div>
+    <a class="admin-cancel" href="{{ url_for('admin_menu') }}">Volver al menú</a>
+  </div>
+
+  <div class="admin-email-status {% if google_client_id %}is-ready{% endif %}" role="status">
+    <strong>{% if google_client_id %}Google activo{% else %}Pendiente de configurar{% endif %}</strong>
+    <span>{% if google_client_id %}El botón aparecerá en iniciar sesión y crear cuenta.{% else %}Pega el Client ID web de Google Cloud para activarlo.{% endif %}</span>
+  </div>
+
+  <form class="admin-form admin-google-form" method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label>Client ID de Google
+      <input name="client_id" value="{{ google_client_id }}" placeholder="1234567890-abc.apps.googleusercontent.com" autocomplete="off">
+    </label>
+    <p class="admin-intro">En Google Cloud crea un cliente OAuth de tipo <strong>Aplicación web</strong> y agrega estos orígenes autorizados:</p>
+    <ul class="admin-google-origins">
+      <li><code>http://127.0.0.1:5000</code></li>
+      <li><code>http://localhost:5000</code></li>
+    </ul>
+    <div class="admin-form-actions">
+      <button class="button button-dark" type="submit">Guardar Client ID</button>
+      {% if google_client_id %}<button class="button button-light" type="submit" name="client_id" value="">Desactivar Google</button>{% endif %}
+    </div>
+  </form>
+</section>
+{% endblock %}
+

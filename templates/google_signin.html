@@ -1,0 +1,47 @@
+ <div class="google-signin-area">
+  <div class="auth-divider"><span>o continúa con</span></div>
+  {% if google_client_id %}
+    {% if mode == 'register' %}
+      <p class="google-privacy-error" data-google-privacy-error role="status" hidden>Marca la casilla del aviso de privacidad para crear tu cuenta.</p>
+    {% endif %}
+    <div id="g_id_onload"
+         data-client_id="{{ google_client_id }}"
+         data-context="{% if mode == 'register' %}signup{% else %}signin{% endif %}"
+         data-ux_mode="popup"
+         data-callback="handleGoogleCredential"></div>
+    <div class="g_id_signin google-icon-button"
+         aria-label="Continuar con Google"
+         title="Continuar con Google"
+         data-type="icon"
+         data-shape="circle"
+         data-theme="outline"
+         data-size="large"
+         data-locale="es-419"></div>
+    <script>
+      window.handleGoogleCredential = async function (response) {
+        const privacyCheckbox = document.querySelector('[data-google-privacy-consent]') || document.querySelector('input[name="privacy_accepted"]');
+        const privacyAccepted = privacyCheckbox?.checked || false;
+        if ("{{ mode }}" === "register" && !privacyAccepted) {
+          const notice = document.querySelector('[data-google-privacy-error]');
+          if (notice) notice.hidden = false;
+          return;
+        }
+        const body = new URLSearchParams({ credential: response.credential, mode: "{{ mode }}", privacy_accepted: privacyAccepted ? "1" : "0", csrf_token: "{{ csrf_token() }}" });
+        const result = await fetch("{{ url_for('google_login') }}", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body
+        });
+        if (result.redirected) {
+          window.location.assign(result.url);
+        } else {
+          window.location.reload();
+        }
+      };
+    </script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+  {% else %}
+    <p class="google-signin-notice">El acceso con Google se activará cuando el administrador agregue el Client ID de Google Cloud.</p>
+  {% endif %}
+</div>
+

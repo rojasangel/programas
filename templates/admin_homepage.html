@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Editor visual del inicio | FR BEISSHOP{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='homepage-visual-editor.css', v='visual5') }}">
+<section class="visual-editor" data-visual-home-editor data-render-url="{{ url_for('admin_homepage_canvas') }}">
+  <header class="ve-toolbar">
+    <div class="ve-heading"><a href="{{ url_for('admin_menu') }}" aria-label="Volver al menú de administración">←</a><div><p>FR BEISSHOP / EDITOR VISUAL</p><h1>Diseña tu inicio</h1></div></div>
+    <div class="ve-toolbar-actions"><button type="button" class="ve-icon-button" data-undo disabled title="Deshacer (Ctrl+Z)" aria-label="Deshacer">↶</button><button type="button" class="ve-icon-button" data-redo disabled title="Rehacer (Ctrl+Mayús+Z)" aria-label="Rehacer">↷</button><button type="button" class="ve-button" data-save="draft">Guardar borrador</button><button type="button" class="ve-button ve-primary" data-save="publish">Publicar cambios ↗</button></div>
+  </header>
+  <div class="ve-context-bar"><span class="ve-status" data-editor-status role="status">{% if has_unpublished_changes %}Borrador guardado · Sin publicar{% else %}Todo guardado{% endif %}</span><span>Haz clic para editar. Usa los controles <b>✥</b> para mover.</span><a href="{{ url_for('admin_homepage_preview') }}" target="_blank" rel="noopener" data-preview-link>Ver borrador guardado ↗</a></div>
+  <div class="ve-error" data-home-error role="alert" {% if not homepage_errors %}hidden{% endif %}>{{ homepage_errors|join(' ') }}</div>
+  <noscript><p class="ve-error">Activa JavaScript para utilizar el editor visual.</p></noscript>
+  <form method="post" enctype="multipart/form-data" data-home-form action="{{ url_for('admin_homepage') }}" hidden>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  </form>
+  <div class="ve-workbench">
+    <aside class="ve-layers" aria-label="Secciones de la página"><div class="ve-panel-title">Tu página <span>↕</span></div><p class="ve-muted">Arrastra las secciones para cambiar su orden.</p><div data-layer-list></div><div class="ve-add-section"><button class="ve-button" type="button" data-add="section">＋ Foto y texto</button><button class="ve-button" type="button" data-add="announcement">＋ Anuncio</button></div><p class="ve-muted ve-products-note">Los artículos y sus precios se actualizan desde <a href="{{ url_for('admin') }}">Productos</a>.</p></aside>
+    <div class="ve-stage"><div class="ve-stage-bar"><span>VISTA PREVIA EDITABLE</span><div class="ve-device-switch" role="group" aria-label="Tamaño de vista previa"><button type="button" data-device="desktop" aria-pressed="true">Computadora</button><button type="button" data-device="mobile" aria-pressed="false">Celular</button></div><span class="ve-live-dot">En vivo</span></div><div class="ve-canvas-wrap" data-canvas-wrap><iframe class="ve-canvas" data-home-canvas title="Vista previa editable de la página de inicio" sandbox="allow-same-origin"></iframe><div class="ve-loading" data-canvas-loading>Cargando tu página…</div></div></div>
+    <aside class="ve-inspector" aria-label="Opciones del elemento seleccionado"><div class="ve-panel-title" data-selection-label>Portada</div><div data-inspector></div></aside>
+  </div>
+  <p class="ve-bottom-note">Edita libremente y guarda tu borrador. Tus clientes verán los cambios cuando pulses «Publicar cambios».</p>
+  <script type="application/json" data-home-initial>{{ {'content': home_content, 'limits': home_limits, 'status': home_status}|tojson }}</script>
+</section>
+<script src="{{ url_for('static', filename='homepage-editor.js', v='visual13') }}" defer></script>
+{% endblock %}
+

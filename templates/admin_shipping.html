@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Paquetería | FR BEISSHOP{% endblock %}
+{% block content %}
+<section class="admin-page section-wrap admin-shipping-page">
+  <div class="admin-heading">
+    <div>
+      <p class="eyebrow eyebrow-dark">FR BEISSHOP / ADMINISTRACIÓN / ENVÍOS</p>
+      <h1>Paquetería</h1>
+      <p class="admin-intro">Conecta Skydropx para cotizar el envío antes de cobrar el pedido.</p>
+    </div>
+    <a class="admin-cancel" href="{{ url_for('admin_menu') }}">Volver al menú</a>
+  </div>
+
+  <div class="admin-email-status {% if shipping_enabled %}is-ready{% endif %}" role="status">
+    <strong>{% if shipping_enabled %}Skydropx está listo{% else %}Pendiente de configurar{% endif %}</strong>
+    <span>{% if shipping_enabled %}El carrito puede consultar tarifas para cada dirección.{% else %}Completa las credenciales y el origen para activar las cotizaciones automáticas.{% endif %}</span>
+  </div>
+
+  <form class="admin-form admin-shipping-form" method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="admin-fields">
+      <label>Dirección de la API
+        <input name="api_base" value="{{ api_base }}" placeholder="https://api-pro.skydropx.com" required>
+      </label>
+      <label>País de origen
+        <input name="country" value="{{ country }}" maxlength="2" placeholder="MX" required>
+      </label>
+      <label>Client ID de Skydropx
+        <input name="client_id" value="{{ client_id }}" autocomplete="off" required>
+      </label>
+      <label>Client secret
+        <input name="client_secret" type="password" placeholder="Déjalo vacío para conservarlo" autocomplete="new-password">
+      </label>
+      <label>Código postal de origen
+        <input name="postal_code" value="{{ postal_code }}" inputmode="numeric" pattern="[0-9]{5}" maxlength="5" placeholder="21100" required>
+      </label>
+      <label>Estado de origen
+        <input name="origin_state" value="{{ origin_state }}" placeholder="Baja California" required>
+      </label>
+      <label>Ciudad de origen
+        <input name="origin_city" value="{{ origin_city }}" placeholder="Mexicali" required>
+      </label>
+      <label>Colonia de origen
+        <input name="origin_neighborhood" value="{{ origin_neighborhood }}" placeholder="Colonia de la tienda" required>
+      </label>
+      <label class="admin-wide">Dirección de origen
+        <input name="origin_address" value="{{ origin_address }}" placeholder="Calle y número de la tienda" required>
+      </label>
+      <label>Teléfono de origen
+        <input name="origin_phone" value="{{ origin_phone }}" placeholder="6861234567" inputmode="tel" required>
+      </label>
+      <label class="admin-wide">Transportistas preferidos <span>(opcional, separados por coma)</span>
+        <input name="carriers" value="{{ carriers }}" placeholder="estafeta, fedex, dhl">
+      </label>
+    </div>
+    <p class="admin-shipping-hint">Las medidas y el peso se toman de cada producto. El cliente verá las tarifas disponibles en el carrito y elegirá una antes de pagar con Stripe.</p>
+    <div class="admin-form-actions">
+      <button class="button button-dark" type="submit">Guardar configuración</button>
+    </div>
+  </form>
+
+  <form class="admin-email-test-form admin-shipping-test-form" method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="accion" value="test">
+    <p class="admin-intro">Guarda los datos primero y después comprueba que Skydropx acepte las credenciales.</p>
+    <button class="button button-light" type="submit">Probar conexión</button>
+  </form>
+</section>
+{% endblock %}
+

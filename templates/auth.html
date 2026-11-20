@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}{% if mode == 'register' %}Crear cuenta{% else %}Iniciar sesión{% endif %} | FR BEISSHOP{% endblock %}
+{% block content %}
+<section class="admin-page section-wrap auth-page">
+  <div class="auth-brand" aria-label="FR BEISSHOP">
+    <img class="auth-brand-logo" src="{{ url_for('static', filename='logo.png') }}" alt="">
+    <span>FR BEISSHOP</span>
+  </div>
+  <p class="eyebrow eyebrow-dark">FR BEISSHOP / MI CUENTA</p>
+  {% if mode == 'register' %}
+    <h1>Crea tu cuenta</h1>
+    <p class="admin-intro">Guarda tus datos y ten tu cuenta lista para tus próximas compras.</p>
+    <form class="admin-form" method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label>Nombre completo
+        <input name="nombre" autocomplete="name" required maxlength="100" value="{{ request.form.get('nombre', '') }}">
+      </label>
+      <label>Correo electrónico
+        <input type="email" name="correo" autocomplete="email" required maxlength="254" value="{{ request.form.get('correo', '') }}">
+      </label>
+      <label>Tel&eacute;fono o WhatsApp <span>Opcional</span>
+        <input type="tel" name="telefono" autocomplete="tel" inputmode="tel" maxlength="20" pattern="[0-9 +()\-]{10,20}" placeholder="686 123 4567" value="{{ request.form.get('telefono', '') }}">
+      </label>
+      <label>Contraseña <span>Al menos 8 caracteres</span>
+        <input type="password" name="password" autocomplete="new-password" minlength="8" required>
+      </label>
+      <label>Confirmar contrase&ntilde;a
+        <input type="password" name="password_confirmacion" autocomplete="new-password" minlength="8" required>
+      </label>
+      <label class="legal-consent optional-consent">
+        <input type="checkbox" name="marketing_opt_in" value="1" {% if request.form.get('marketing_opt_in') == '1' %}checked{% endif %}>
+        <span>Quiero recibir novedades, promociones y descuentos de FR BEISSHOP. <small>Opcional</small></span>
+      </label>
+      <label class="legal-consent">
+        <input type="checkbox" name="privacy_accepted" value="1" required {% if request.form.get('privacy_accepted') == '1' %}checked{% endif %}>
+        <span>He le&iacute;do el <a href="{{ url_for('privacy_page') }}" target="_blank" rel="noopener">Aviso de privacidad</a> y entiendo c&oacute;mo se usar&aacute;n los datos de mi cuenta.</span>
+      </label>
+      <button class="button button-dark" type="submit">Crear cuenta</button>
+    </form>
+    {% include 'google_signin.html' %}
+    <p class="auth-switch">¿Ya tienes cuenta? <a href="{{ url_for('login') }}">Inicia sesión</a></p>
+  {% else %}
+    <h1>Inicia sesión</h1>
+    <p class="admin-intro">Entra a tu cuenta de FR BEISSHOP.</p>
+    <div class="admin-access-callout">
+      <div>
+        <strong>¿Administras la tienda?</strong>
+        <span>Entra al panel con tu usuario de administrador.</span>
+      </div>
+      <a class="button button-light" href="{{ url_for('admin_login') }}">Acceso de administrador</a>
+    </div>
+    <form class="admin-form" method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label>Correo electrónico o usuario administrador
+        <input type="text" inputmode="email" name="correo" autocomplete="username" required autofocus value="{{ request.form.get('correo', '') }}">
+      </label>
+      <label>Contraseña
+        <input type="password" name="password" autocomplete="current-password" required>
+      </label>
+      <button class="button button-dark" type="submit">Entrar</button>
+    </form>
+    <p class="auth-switch"><a href="{{ url_for('password_recovery') }}">&iquest;Olvidaste tu contrase&ntilde;a?</a></p>
+    {% include 'google_signin.html' %}
+    <p class="auth-switch">¿Primera vez aquí? <a href="{{ url_for('register') }}">Crea tu cuenta</a></p>
+  {% endif %}
+</section>
+<script>
+  (() => {
+    const authPage = document.querySelector('.auth-page');
+    if (!authPage) return;
+
+    authPage.querySelector('.admin-access-callout')?.remove();
+
+    authPage.querySelectorAll('input[type="password"]').forEach((input, index) => {
+      input.id = input.id || `auth-password-${index}`;
+      const control = document.createElement('span');
+      control.className = 'password-control';
+      input.parentNode.insertBefore(control, input);
+      control.appendChild(input);
+
+      const toggle = document.createElement('button');
+      toggle.type = 'button';
+      toggle.className = 'password-toggle';
+      toggle.textContent = 'Mostrar';
+      toggle.setAttribute('aria-controls', input.id);
+      toggle.setAttribute('aria-pressed', 'false');
+      toggle.addEventListener('click', () => {
+        const visible = input.type === 'text';
+        input.type = visible ? 'password' : 'text';
+        toggle.textContent = visible ? 'Mostrar' : 'Ocultar';
+        toggle.setAttribute('aria-pressed', String(!visible));
+      });
+      control.appendChild(toggle);
+    });
+
+    authPage.querySelectorAll('label').forEach((label) => {
+      if (label.textContent.includes('usuario administrador')) {
+        label.firstChild.textContent = 'Correo electrónico';
+      }
+    });
+    const submit = authPage.querySelector('button[type="submit"]');
+    if (submit && submit.textContent.trim() === 'Entrar') submit.textContent = 'Iniciar sesión';
+  })();
+</script>
+{% endblock %}
+

@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+{% block title %}Mi cuenta | FR BEISSHOP{% endblock %}
+{% block content %}
+<section class="account-dashboard section-wrap">
+  <header class="account-hero">
+    <div class="account-avatar" aria-hidden="true">{{ user_profile.name[0:1]|upper }}</div>
+    <div class="account-hero-copy">
+      <p class="eyebrow eyebrow-dark">FR BEISSHOP / MI CUENTA</p>
+      <h1>Hola, {{ user_profile.name }}.</h1>
+      <p>Administra tus datos y consulta el estado de tus pedidos desde un solo lugar.</p>
+    </div>
+    <form action="{{ url_for('logout') }}" method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="account-logout-button" type="submit">Cerrar sesi&oacute;n</button>
+    </form>
+  </header>
+
+  {% if not user_profile.email_verified and not user_profile.google_sub %}
+    <div class="account-verification-alert" role="status">
+      <div>
+        <strong>Confirma tu correo electrónico</strong>
+        <p>Te enviamos un enlace para confirmar tu dirección y mantener segura tu cuenta.</p>
+      </div>
+      <form action="{{ url_for('resend_email_verification') }}" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="button button-light" type="submit">Reenviar enlace</button>
+      </form>
+    </div>
+  {% endif %}
+
+  <div class="account-stats" aria-label="Resumen de la cuenta">
+    <div class="account-stat"><span>Pedidos</span><strong>{{ order_count }}</strong><small>registrados</small></div>
+    <div class="account-stat"><span>Total comprado</span><strong>{{ total_spent|mxn }}</strong><small>MXN</small></div>
+    <div class="account-stat"><span>Acceso</span><strong>{% if user_profile.google_sub %}Google{% else %}Correo{% endif %}</strong><small>{% if user_profile.email_verified or user_profile.google_sub %}correo confirmado{% else %}confirmación pendiente{% endif %}</small></div>
+  </div>
+
+  <div class="account-layout">
+    <aside class="account-sidebar">
+      <section class="account-panel account-profile-panel">
+        <div class="account-panel-heading">
+          <div><p class="eyebrow eyebrow-dark">PERFIL</p><h2>Mis datos</h2></div>
+          <span class="account-panel-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false"><circle cx="12" cy="8" r="3.2"></circle><path d="M5.5 19c.8-3.1 3-4.7 6.5-4.7s5.7 1.6 6.5 4.7"></path></svg>
+          </span>
+        </div>
+        <p class="account-email">{{ user_profile.email }}</p>
+        <div class="account-profile-summary" id="account-profile-summary">
+          <div class="account-summary-group">
+            <div class="account-summary-field"><span>Nombre visible</span><strong>{{ user_profile.name or 'Sin agregar' }}</strong></div>
+            <div class="account-summary-field"><span>Teléfono</span><strong>{{ user_profile.phone or 'Sin agregar' }}</strong></div>
+          </div>
+          <div class="account-summary-group account-summary-address">
+            <span class="account-summary-group-title">Dirección de envío</span>
+            <strong>{{ user_profile.address or 'Sin agregar' }}</strong>
+            <span>{{ user_profile.neighborhood or 'Colonia sin agregar' }}</span>
+            <span>{{ user_profile.city or 'Ciudad sin agregar' }}{% if user_profile.state %}, {{ user_profile.state }}{% endif %}{% if user_profile.postal_code %} · C.P. {{ user_profile.postal_code }}{% endif %}</span>
+          </div>
+          <button class="button button-light account-edit-button" id="account-profile-edit" type="button">Editar información</button>
+        </div>
+        <form class="account-profile-form" id="account-profile-form" action="{{ url_for('update_profile') }}" method="post" hidden>
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <div class="account-profile-fields">
+            <label>Nombre visible
+              <input type="text" name="nombre" value="{{ user_profile.name }}" maxlength="100" required>
+            </label>
+            <label>Teléfono
+              <input type="tel" name="telefono" value="{{ user_profile.phone|default('', true) }}" maxlength="20" placeholder="686 123 4567">
+            </label>
+            <label>Dirección
+              <input type="text" name="direccion" value="{{ user_profile.address|default('', true) }}" maxlength="180" placeholder="Calle y número">
+            </label>
+            <label>Colonia
+              <input type="text" name="colonia" value="{{ user_profile.neighborhood|default('', true) }}" maxlength="100">
+            </label>
+            <label>Ciudad
+              <input type="text" name="ciudad" value="{{ user_profile.city|default('', true) }}" maxlength="80" placeholder="Mexicali">
+            </label>
+            <label>Estado
+              <input type="text" name="estado" value="{{ user_profile.state|default('', true) }}" maxlength="80">
+            </label>
+            <label>Código postal
+              <input type="text" name="codigo_postal" value="{{ user_profile.postal_code|default('', true) }}" inputmode="numeric" pattern="[0-9]{5}" maxlength="5">
+            </label>
+          </div>
+          <label class="legal-consent optional-consent profile-marketing-consent">
+            <input type="checkbox" name="marketing_opt_in" value="1" {% if user_profile.marketing_opt_in %}checked{% endif %}>
+            <span>Quiero recibir novedades, promociones y descuentos de FR BEISSHOP. <small>Opcional</small></span>
+          </label>
+          <div class="account-form-actions">
+            <button class="button button-dark" type="submit">Guardar datos</button>
+            <button class="button button-light" id="account-profile-cancel" type="button">Cancelar</button>
+          </div>
+        </form>
+        <a class="account-security-link" href="{{ url_for('password_recovery') }}">Cambiar o recuperar contrase&ntilde;a</a>
+        <div class="account-privacy-actions">
+          <a href="{{ url_for('account_data_export') }}">Descargar mis datos <span aria-hidden="true">&#8595;</span></a>
+          <form action="{{ url_for('delete_account') }}" method="post" onsubmit="return confirm('Esta acción eliminará tu cuenta y tus pedidos. ¿Deseas continuar?');">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="confirmar" value="ELIMINAR">
+            <button type="submit">Eliminar mi cuenta</button>
+          </form>
+        </div>
+      </section>
+
+      <section class="account-panel account-links-panel">
+        <p class="eyebrow eyebrow-dark">ACCESOS R&Aacute;PIDOS</p>
+        <a href="{{ url_for('index') }}">Explorar la tienda <span aria-hidden="true">&#8594;</span></a>
+        <a href="{{ url_for('auction') }}">Ver subastas <span aria-hidden="true">&#8594;</span></a>
+        <a href="{{ url_for('cart') }}">Abrir mi carrito <span aria-hidden="true">&#8594;</span></a>
+      </section>
+    </aside>
+
+    <main class="account-main">
+      <div class="account-section-heading">
+        <div><p class="eyebrow eyebrow-dark">HISTORIAL</p><h2>Mis pedidos</h2></div>
+        <span class="account-order-count">{{ order_count }} pedido{% if order_count != 1 %}s{% endif %}</span>
+      </div>
+      {% if orders %}
+        <div class="account-order-list">
+          {% for order in orders %}
+            <article class="account-order-card account-order-card--{{ 'paid' if order.status == 'Pagado' else 'pending' if order.status == 'Pago pendiente' else 'cancelled' if order.status in ['Cancelado', 'Reembolsado'] else 'default' }}">
+              <div class="account-order-card-heading">
+                <div class="account-order-id"><p class="eyebrow eyebrow-dark">PEDIDO #{{ order.id }}</p><h3>{{ order.created_at|order_datetime }}</h3></div>
+                <span class="account-order-status account-order-status--{{ 'paid' if order.status == 'Pagado' else 'pending' if order.status == 'Pago pendiente' else 'cancelled' if order.status in ['Cancelado', 'Reembolsado'] else 'default' }}">{{ order.status }}</span>
+              </div>
+              <div class="account-order-meta-grid">
+                <div class="account-order-meta"><span>Entrega</span><strong>{% if order.delivery_method == 'local' %}Personal en Mexicali{% else %}Env&iacute;o a {{ order.city }}, {{ order.state }}{% endif %}</strong><small>C.P. {{ order.postal_code }}</small></div>
+                <div class="account-order-meta"><span>Pago</span><strong>{{ order.payment_method|default('whatsapp')|capitalize }}</strong><small>Pedido confirmado</small></div>
+              </div>
+              {% set tracking_link = 'https://tracking.skydropx.com/' ~ order.tracking_number %}
+              {% if order.tracking_number and order.shipping_carrier and 'fedex' in order.shipping_carrier|lower %}
+                {% set tracking_link = 'https://www.fedex.com/fedextrack/?trknbr=' ~ order.tracking_number %}
+              {% elif order.tracking_number and order.shipping_carrier and 'dhl' in order.shipping_carrier|lower %}
+                {% set tracking_link = 'https://www.dhl.com/mx-es/home/rastreo.html?tracking-id=' ~ order.tracking_number %}
+              {% elif order.tracking_number and order.shipping_carrier and 'ups' in order.shipping_carrier|lower %}
+                {% set tracking_link = 'https://www.ups.com/track?loc=es_MX&tracknum=' ~ order.tracking_number %}
+              {% endif %}
+              {% if order.tracking_number or order.shipping_note or order.shipping_label_url %}
+                <div class="account-order-shipping">
+                  <div class="account-order-shipping-copy"><span class="account-order-shipping-icon" aria-hidden="true">&#128230;</span><div><strong>Seguimiento del env&iacute;o</strong><small>{% if order.tracking_number %}<a class="account-order-tracking-link" href="{{ tracking_link }}" target="_blank" rel="noopener noreferrer" aria-label="Ver seguimiento de la gu&iacute;a {{ order.tracking_number }}">Gu&iacute;a {{ order.tracking_number }} <span aria-hidden="true">&#8599;</span></a>{% if order.shipping_carrier %} &middot; {{ order.shipping_carrier|upper }}{% endif %}{% elif order.shipping_note %}{{ order.shipping_note }}{% else %}Actualizaci&oacute;n pendiente{% endif %}</small></div></div>
+                  {% if order.shipping_label_url %}<a class="account-order-label-link" href="{{ order.shipping_label_url }}" target="_blank" rel="noopener">Descargar gu&iacute;a <span aria-hidden="true">&#8599;</span></a>{% endif %}
+                </div>
+              {% endif %}
+              {% set progress_statuses = ['Pago pendiente', 'Pagado', 'En preparación', 'Enviado', 'Completado'] %}
+              {% if order.tracking_number or order.shipping_note %}<p class="account-order-destination">{% if order.tracking_number %}Guía: {{ order.tracking_number }}{% if order.shipping_carrier %} ({{ order.shipping_carrier }}){% endif %}{% endif %}{% if order.shipping_note %} · {{ order.shipping_note }}{% endif %}</p>{% endif %}
+              {% set progress_statuses = ['Pago pendiente', 'Pagado', 'En preparación', 'Enviado', 'Completado'] %}
+              {% set progress_statuses = ['Pago pendiente', 'Pagado', 'En preparación', 'Enviado', 'Completado'] %}
+              {% set normalized_status = order.status|replace('ó', 'o')|replace('í', 'i') %}
+              {% set progress_statuses = ['Pago pendiente', 'Pagado', 'En preparacion', 'Enviado', 'Completado'] %}
+              {% set normalized_status = order.status %}
+              {% if order.status.startswith('En prepar') %}{% set normalized_status = 'En preparacion' %}{% endif %}
+              {% if normalized_status in progress_statuses %}
+                {% set current_progress = progress_statuses.index(normalized_status) %}
+                <div class="account-order-status-heading"><strong>Estado del pedido</strong><span>{{ order.status }}</span></div>
+                <ol class="account-order-progress" aria-label="Progreso del pedido">
+                  {% for progress_status in progress_statuses %}<li class="{% if loop.index0 <= current_progress %}is-complete{% endif %}"><span>{{ loop.index }}</span><small>{% if progress_status == 'En preparacion' %}En preparaci&oacute;n{% else %}{{ progress_status }}{% endif %}</small></li>{% endfor %}
+                </ol>
+              {% else %}
+                <p class="account-order-alert">Este pedido está {{ order.status|lower }}.</p>
+              {% endif %}
+              <ul class="account-order-lines">
+                {% for line in order.lines %}
+                  <li class="account-order-line">
+                    {% if line.custom_image %}
+                      <img class="account-order-line-image" src="{{ url_for('static', filename='uploads/custom-bats/' ~ line.custom_image) }}" alt="Vista previa de {{ line.name }}" loading="lazy" onerror="this.hidden=true;">
+                    {% endif %}
+                    <div class="account-order-line-copy">
+                      <div class="account-order-line-title"><strong>{{ line.name }}</strong><span>{{ line.quantity }} unidad{% if line.quantity != 1 %}es{% endif %}</span></div>
+                      {% if line.customizations %}
+                        <details class="account-order-customization">
+                          <summary>Ver personalizaci&oacute;n</summary>
+                          <div>{% for label, value in line.customizations.items() %}<span><b>{{ label }}:</b> {{ value }}</span>{% endfor %}</div>
+                        </details>
+                      {% endif %}
+                    </div>
+                    <strong>{{ line.subtotal|mxn }} MXN</strong>
+                  </li>
+                {% endfor %}
+              </ul>
+              {% set order_item_count = order.lines|sum(attribute='quantity') %}
+              <div class="account-order-footer"><span>{{ order_item_count }} art&iacute;culo{% if order_item_count != 1 %}s{% endif %}</span><div class="account-order-total"><small>Total del pedido</small><strong>{{ order.total|mxn }} MXN</strong></div></div>
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="account-empty-orders">
+          <span class="account-empty-icon" aria-hidden="true">&#9675;</span>
+          <h3>A&uacute;n no tienes pedidos</h3>
+          <p>Cuando prepares tu primera compra aparecer&aacute; aqu&iacute; con su estado y total.</p>
+          <a class="button button-dark" href="{{ url_for('index') }}">Explorar equipo</a>
+        </div>
+      {% endif %}
+    </main>
+  </div>
+</section>
+<script>
+  (() => {
+    const summary = document.getElementById('account-profile-summary');
+    const form = document.getElementById('account-profile-form');
+    const editButton = document.getElementById('account-profile-edit');
+    const cancelButton = document.getElementById('account-profile-cancel');
+    if (!summary || !form || !editButton || !cancelButton) return;
+    const setEditing = (editing) => {
+      summary.hidden = editing;
+      form.hidden = !editing;
+      if (editing) form.querySelector('input[name="nombre"]')?.focus();
+    };
+    editButton.addEventListener('click', () => setEditing(true));
+    cancelButton.addEventListener('click', () => setEditing(false));
+  })();
+</script>
+{% endblock %}
+

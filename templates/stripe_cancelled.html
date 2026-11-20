@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Pago cancelado | FR BEISSHOP{% endblock %}
+{% block content %}
+<section class="empty-cart section-wrap">
+  <span aria-hidden="true">!</span>
+  <h1>El pago no se complet&oacute;.</h1>
+  <p>El pedido a&uacute;n no est&aacute; confirmado. La reserva se liberar&aacute; cuando Stripe confirme que el enlace de pago expir&oacute;.</p>
+  <a class="button button-dark" href="{{ url_for('index') }}">Volver a la tienda</a>
+  {% if order_id %}<p class="admin-empty-state">Pedido #{{ order_id }}</p>{% endif %}
+</section>
+{% endblock %}
+

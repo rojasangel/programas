@@ -1,0 +1,74 @@
+[
+  {
+    "id": 57,
+    "name": "Sticker",
+    "category": "Accesorios de entrenamiento",
+    "section": "Béisbol",
+    "sections": [
+      "Béisbol"
+    ],
+    "price": 10.0,
+    "stock": 10,
+    "package_weight_kg": 0.5,
+    "package_length_cm": 30,
+    "package_width_cm": 20,
+    "package_height_cm": 15,
+    "description": "Lleva nuestra marca siempre contigo y luce como los grandes.",
+    "tag": "Nuestra marca",
+    "images": [
+      "/static/uploads/d3a59e1dbf3c41cc8149b3f6acef4530.png"
+    ],
+    "image": "/static/uploads/d3a59e1dbf3c41cc8149b3f6acef4530.png",
+    "brand_featured": true,
+    "views": 1,
+    "admin_added": true,
+    "active": true
+  },
+  {
+    "id": 7,
+    "name": "FR BAT",
+    "category": "Bat",
+    "section": "Béisbol",
+    "sections": [
+      "Béisbol"
+    ],
+    "price": 1350.0,
+    "description": "Elige la medida, los colores del bat y del mango; agrega o quita el grip y escribe tu nombre o número.",
+    "tag": "Personalizable",
+    "bat_measure": "32",
+    "bat_weight": "-3",
+    "image": "/static/bat-transition.png",
+    "views": 179,
+    "admin_added": true,
+    "customizable": true,
+    "wood_colors": [
+      "Negro",
+      "Vino",
+      "Rojo",
+      "Azul",
+      "Rosa",
+      "Natural"
+    ],
+    "default_handle_color": "Vino",
+    "stock": 99,
+    "active": true,
+    "package_weight_kg": 1.2,
+    "package_length_cm": 90.0,
+    "package_width_cm": 10.0,
+    "package_height_cm": 10.0,
+    "images": [
+      "/static/bat-transition.png"
+    ],
+    "brand_featured": false,
+    "glove_measure": "",
+    "grip_thickness": "",
+    "guantaleta_size": "",
+    "custom_grip_colors": [
+      "Negro",
+      "Rojo",
+      "Azul",
+      "Blanco"
+    ],
+    "bat_views": {}
+  }
+]

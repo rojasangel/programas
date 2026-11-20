@@ -1,0 +1,392 @@
+{% extends "base.html" %}
+{% block title %}Datos de envío | FR BEISSHOP{% endblock %}
+{% block content %}
+<section class="checkout-page section-wrap">
+  <div class="checkout-page-heading">
+    <div>
+      <p class="eyebrow eyebrow-dark">FR BEISSHOP / PAGO</p>
+      <h1>Datos de envío</h1>
+      <p>Completa tus datos y después continúa al pago seguro con Stripe.</p>
+    </div>
+    <a class="admin-cancel" href="{{ url_for('cart') }}">Volver al carrito</a>
+  </div>
+  <div class="checkout-page-layout">
+    <section class="checkout-page-summary" aria-label="Resumen del pedido">
+      <p class="eyebrow eyebrow-dark">RESUMEN</p>
+      <h2>Tu pedido</h2>
+      {% for item in items %}
+        <div class="checkout-summary-line">
+          <span>{{ item.quantity }} × {{ item.product.name }}</span>
+          <strong>{{ item.subtotal|mxn }} MXN</strong>
+        </div>
+      {% endfor %}
+      {% if coupon and discount > 0 %}
+        <div class="checkout-summary-line checkout-summary-discount">
+          <span>Descuento ({{ coupon.code }})</span>
+          <strong>-{{ discount|mxn }} MXN</strong>
+        </div>
+      {% endif %}
+      <div class="checkout-summary-total">
+        <span>Subtotal a pagar</span>
+        <strong>{{ (total - discount)|mxn }} MXN</strong>
+      </div>
+      <p>El costo del envío se calcula con tus datos de entrega antes de enviarte a Stripe.</p>
+    </section>
+    <aside class="order-panel checkout-page-panel">
+
+        <div class="order-total"><span>Subtotal de productos</span><strong>{{ total|mxn }} MXN</strong></div>
+        {% if coupon and discount > 0 %}<div class="order-total order-discount"><span>Descuento ({{ coupon.code }})</span><strong>-{{ discount|mxn }} MXN</strong></div>{% endif %}
+        <p class="shipping-note">Los pedidos salen desde Mexicali, B.C. La entrega personal en Mexicali no tiene costo.</p>
+        <div class="order-total"><span id="checkout-shipping-label">Envío estimado</span><strong id="checkout-shipping" data-estimate="{{ shipping_estimate }}">{{ shipping_estimate|mxn }} MXN</strong></div>
+        <div class="order-total"><span id="checkout-grand-total-label">Total estimado</span><strong id="checkout-grand-total" data-subtotal="{{ total - discount }}">{{ (total - discount + shipping_estimate)|mxn }} MXN</strong></div>
+        <div class="checkout-stepper" role="tablist" aria-label="Pasos del pedido">
+          <button class="checkout-step-tab is-active" type="button" role="tab" aria-selected="true" data-checkout-step-target="shipping">
+            <span>01</span><strong>Datos de envío</strong>
+          </button>
+          <button class="checkout-step-tab" type="button" role="tab" aria-selected="false" data-checkout-step-target="payment" disabled>
+            <span>02</span><strong>Pago seguro</strong>
+          </button>
+        </div>
+        <form class="checkout-form" action="{{ url_for('place_order') }}" method="post">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <section class="checkout-step-panel is-active" data-checkout-step-panel="shipping">
+            <div class="checkout-step-heading"><span>01</span><div><h2>Datos de envío</h2><p>Completa tus datos para calcular la entrega.</p></div></div>
+            <label>Nombre completo<input name="nombre" autocomplete="name" value="{{ checkout_profile.name|default('', true) }}" required></label>
+            <label>Correo para recibir la confirmación del pedido<input name="correo" type="email" autocomplete="email" value="{{ checkout_profile.email|default(current_user.email if current_user else '', true) }}" placeholder="tu@correo.com" required></label>
+            <label>Teléfono de contacto<input name="telefono" type="tel" autocomplete="tel" inputmode="tel" pattern="[0-9 +()\-]{10,20}" minlength="10" maxlength="20" value="{{ checkout_profile.phone|default('', true) }}" placeholder="686 123 4567" required></label>
+            <label>Dirección y número<input name="direccion" autocomplete="street-address" maxlength="180" value="{{ checkout_profile.address|default('', true) }}" placeholder="Calle y número exterior/interior" required></label>
+            <label>Colonia<input name="colonia" autocomplete="address-line2" maxlength="100" value="{{ checkout_profile.neighborhood|default('', true) }}" required></label>
+            <div class="field-row">
+              <label>Ciudad<input id="checkout-city" name="ciudad" autocomplete="address-level2" value="{{ checkout_profile.city|default('', true) }}" placeholder="Mexicali" required></label>
+              <label>Estado<input name="estado" autocomplete="address-level1" value="{{ checkout_profile.state|default('', true) }}" required></label>
+            </div>
+            <label>Código postal<input id="checkout-postal-code" name="codigo_postal" inputmode="numeric" autocomplete="postal-code" pattern="[0-9]{5}" maxlength="5" value="{{ checkout_profile.postal_code|default('', true) }}" placeholder="00000" required></label>
+            <input type="hidden" name="skydropx_rate_id" id="skydropx-rate-id" value="">
+            <label class="delivery-method-label">Método de entrega
+              <select id="delivery-method" name="metodo_entrega" required>
+                <option value="envio">Envío a domicilio</option>
+                <option id="local-delivery-option" value="local" disabled>Entrega personal el mismo día (solo Mexicali)</option>
+              </select>
+            </label>
+            <p id="local-delivery-note" class="local-delivery-note" role="status" aria-live="polite" hidden></p>
+            <section class="skydropx-quote-panel" aria-label="Cotización de envío con Skydropx" data-enabled="{{ 'true' if skydropx_enabled else 'false' }}" data-csrf="{{ csrf_token() }}">
+              <div class="skydropx-quote-heading"><strong>Envío con Skydropx</strong><span>Proveedor seleccionado</span></div>
+              {% if skydropx_enabled %}
+                <p>Calcula el costo exacto antes de pagar y elige la paquetería que prefieras.</p>
+                <button class="button button-light" id="skydropx-quote-button" type="button">Cotizar envío exacto</button>
+                <div id="skydropx-quote-status" class="skydropx-quote-status" role="status" aria-live="polite"></div>
+                <div id="skydropx-rate-list" class="skydropx-rate-list"></div>
+              {% else %}
+                <p>La cotización automática está pendiente de configuración en el panel de administración.</p>
+              {% endif %}
+            </section>
+            <p id="shipping-estimate" class="shipping-note" data-estimate="{{ shipping_estimate }}">En Mexicali, la entrega personal no tiene costo. Para otras ciudades calcularemos el costo exacto antes de enviarte a Stripe.</p>
+            <button class="button button-dark button-full" id="checkout-to-payment" type="button">Continuar al pago <span aria-hidden="true">↗</span></button>
+          </section>
+          <section class="checkout-step-panel" data-checkout-step-panel="payment" hidden>
+            <div class="checkout-step-heading"><span>02</span><div><h2>Pago seguro</h2><p>Revisa tu total y continúa a Stripe.</p></div></div>
+            <div class="checkout-payment-review">
+              <span>Total del pedido</span>
+              <strong id="checkout-payment-total">{{ (total - discount + shipping_estimate)|mxn }} MXN</strong>
+              <small>El costo de envío se actualiza según la ciudad y la tarifa seleccionada.</small>
+            </div>
+            <label>Método de pago
+              <select name="metodo_pago" required {% if not online_payment_enabled %}disabled{% endif %}>
+                {% if online_payment_enabled %}
+                  <option value="stripe">Pagar con Stripe</option>
+                {% else %}
+                  <option value="">Stripe no está disponible</option>
+                {% endif %}
+              </select>
+            </label>
+            <p class="shipping-note">Serás enviado a Stripe para completar el pago de forma segura.</p>
+            <label class="legal-consent checkout-legal-consent">
+              <input type="checkbox" name="legal_accepted" value="1" required>
+              <span>Confirmo que le&iacute; los <a href="{{ url_for('terms_page') }}" target="_blank" rel="noopener">T&eacute;rminos de compra</a>, los <a href="{{ url_for('returns_page') }}" target="_blank" rel="noopener">Cambios y devoluciones</a> y el <a href="{{ url_for('privacy_page') }}" target="_blank" rel="noopener">Aviso de privacidad</a>.</span>
+            </label>
+            <div class="checkout-payment-actions">
+              <button class="button button-light" id="checkout-back-to-shipping" type="button">← Editar envío</button>
+              <button class="button button-dark" type="submit" {% if not online_payment_enabled %}disabled{% endif %}>Pagar con Stripe <span aria-hidden="true">↗</span></button>
+            </div>
+          </section>
+        </form>
+
+    </aside>
+  </div>
+</section>
+<script>
+
+  (() => {
+    const form = document.querySelector('.checkout-form');
+    const tabs = Array.from(document.querySelectorAll('[data-checkout-step-target]'));
+    const panels = Array.from(document.querySelectorAll('[data-checkout-step-panel]'));
+    const nextButton = document.getElementById('checkout-to-payment');
+    const backButton = document.getElementById('checkout-back-to-shipping');
+    if (!form || !tabs.length || !panels.length || !nextButton || !backButton) return;
+
+    const setStep = (step) => {
+      tabs.forEach((tab) => {
+        const active = tab.dataset.checkoutStepTarget === step;
+        tab.classList.toggle('is-active', active);
+        tab.setAttribute('aria-selected', String(active));
+      });
+      panels.forEach((panel) => {
+        const active = panel.dataset.checkoutStepPanel === step;
+        panel.classList.toggle('is-active', active);
+        panel.hidden = !active;
+      });
+    };
+
+    const validateShipping = () => {
+      const fields = Array.from(document.querySelectorAll('[data-checkout-step-panel="shipping"] input, [data-checkout-step-panel="shipping"] select'))
+        .filter((field) => !field.disabled && field.type !== 'hidden');
+      const invalid = fields.find((field) => !field.checkValidity());
+      if (invalid) {
+        invalid.focus();
+        invalid.reportValidity();
+        return false;
+      }
+      const quotePanel = document.querySelector('.skydropx-quote-panel[data-enabled="true"]');
+      const deliveryMethod = document.getElementById('delivery-method');
+      const selectedRate = Number(window.skydropxShippingRate || 0);
+      if (quotePanel && deliveryMethod?.value !== 'local' && selectedRate <= 0) {
+        const quoteStatus = document.getElementById('skydropx-quote-status');
+        if (quoteStatus) quoteStatus.textContent = 'Espera a que aparezca una tarifa exacta de Skydropx y selecciónala antes de continuar.';
+        document.getElementById('skydropx-quote-button')?.focus();
+        return false;
+      }
+      return true;
+    };
+
+    nextButton.addEventListener('click', () => {
+      if (!validateShipping()) return;
+      const paymentTab = tabs.find((tab) => tab.dataset.checkoutStepTarget === 'payment');
+      if (paymentTab) paymentTab.disabled = false;
+      setStep('payment');
+    });
+    backButton.addEventListener('click', () => setStep('shipping'));
+    tabs.forEach((tab) => tab.addEventListener('click', () => {
+      if (!tab.disabled && tab.dataset.checkoutStepTarget === 'shipping') setStep('shipping');
+      if (!tab.disabled && tab.dataset.checkoutStepTarget === 'payment' && validateShipping()) setStep('payment');
+    }));
+    form.addEventListener('submit', (event) => {
+      if (!validateShipping()) {
+        event.preventDefault();
+        setStep('shipping');
+        return;
+      }
+      const submitButton = form.querySelector('button[type="submit"]');
+      if (submitButton && !submitButton.disabled) {
+        submitButton.disabled = true;
+        submitButton.setAttribute('aria-busy', 'true');
+        submitButton.dataset.originalText = submitButton.textContent;
+        submitButton.textContent = 'Abriendo pago seguro…';
+      }
+    });
+  })();
+
+  (() => {
+    const source = document.getElementById('checkout-grand-total');
+    const target = document.getElementById('checkout-payment-total');
+    if (!source || !target) return;
+    const sync = () => { target.textContent = source.textContent; };
+    sync();
+    new MutationObserver(sync).observe(source, { childList: true, characterData: true, subtree: true });
+  })();
+
+  document.querySelectorAll('[data-quantity-step]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const input = button.parentElement.querySelector('input[type="number"]');
+      if (!input) return;
+      const step = Number(button.dataset.quantityStep || 0);
+      const current = Number(input.value || 0);
+      const next = Math.max(Number(input.min || 0), Math.min(Number(input.max || 99), current + step));
+      input.value = next;
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+  });
+  (() => {
+    const city = document.getElementById('checkout-city');
+    const postalCode = document.getElementById('checkout-postal-code');
+    const method = document.getElementById('delivery-method');
+    const localOption = document.getElementById('local-delivery-option');
+    const note = document.getElementById('local-delivery-note');
+    const quotePanel = document.querySelector('.skydropx-quote-panel');
+    const quoteButton = document.getElementById('skydropx-quote-button');
+    const shippingEstimate = document.getElementById('shipping-estimate');
+    const shippingTotal = document.getElementById('checkout-shipping');
+    const grandTotal = document.getElementById('checkout-grand-total');
+    const shippingLabel = document.getElementById('checkout-shipping-label');
+    const grandTotalLabel = document.getElementById('checkout-grand-total-label');
+    if (!city || !postalCode || !method || !localOption || !note || !shippingEstimate || !shippingTotal || !grandTotal) return;
+    const estimate = Number(shippingTotal.dataset.estimate || 0);
+    const subtotal = Number(grandTotal.dataset.subtotal || 0);
+    const quoteRequired = quotePanel?.dataset.enabled === 'true';
+    const formatMoney = (value) => new Intl.NumberFormat('es-MX', { maximumFractionDigits: 2 }).format(value);
+    const updateDeliveryOptions = () => {
+      const code = postalCode.value.replace(/\D/g, '').slice(0, 5);
+      const complete = /^\d{5}$/.test(code);
+      const number = Number(code);
+      const isMexicali = complete && ((number >= 21000 && number <= 21399) || (number >= 21600 && number <= 21980));
+      localOption.disabled = !isMexicali;
+      method.disabled = true;
+      method.value = isMexicali ? 'local' : 'envio';
+      note.hidden = false;
+      note.textContent = isMexicali
+        ? 'Código postal de Mexicali detectado. Se aplicará entrega personal sin costo.'
+        : complete
+          ? 'Código postal fuera de Mexicali detectado. Calcularemos el envío exacto antes del pago.'
+          : 'Escribe un código postal de 5 números para decidir el método de entrega.';
+      shippingEstimate.textContent = isMexicali
+        ? 'Entrega personal en Mexicali sin costo. Te contactaremos para coordinar el horario y punto de entrega.'
+        : quoteRequired
+          ? 'El costo exacto se consulta con Skydropx antes de enviarte a Stripe.'
+          : `Para otras ciudades, se agrega un envío estimado de ${formatMoney(estimate)} MXN al pago de Stripe.`;
+      if (quotePanel) quotePanel.hidden = isMexicali;
+      if (quoteButton) quoteButton.disabled = isMexicali;
+      const selectedRate = Number(window.skydropxShippingRate || 0);
+      if (isMexicali) {
+        if (shippingLabel) shippingLabel.textContent = 'Envío';
+        if (grandTotalLabel) grandTotalLabel.textContent = 'Total';
+        shippingTotal.textContent = '0 MXN';
+        grandTotal.textContent = `${formatMoney(subtotal)} MXN`;
+        window.skydropxShippingRate = 0;
+        const rateInput = document.getElementById('skydropx-rate-id');
+        if (rateInput) rateInput.value = '';
+      } else if (quoteRequired && selectedRate <= 0) {
+        if (shippingLabel) shippingLabel.textContent = 'Envío exacto';
+        if (grandTotalLabel) grandTotalLabel.textContent = 'Total';
+        shippingTotal.textContent = complete ? 'Pendiente' : '—';
+        grandTotal.textContent = complete ? 'Cotiza envío' : '—';
+      } else {
+        if (shippingLabel) shippingLabel.textContent = quoteRequired ? 'Envío exacto' : 'Envío estimado';
+        if (grandTotalLabel) grandTotalLabel.textContent = quoteRequired ? 'Total' : 'Total estimado';
+        const shipping = selectedRate > 0 ? selectedRate : estimate;
+        shippingTotal.textContent = `${formatMoney(shipping)} MXN`;
+        grandTotal.textContent = `${formatMoney(subtotal + shipping)} MXN`;
+      }
+    };
+    city.addEventListener('input', updateDeliveryOptions);
+    postalCode.addEventListener('input', updateDeliveryOptions);
+    updateDeliveryOptions();
+  })();
+  (() => {
+    const panel = document.querySelector('.skydropx-quote-panel[data-enabled="true"]');
+    if (!panel) return;
+    const button = document.getElementById('skydropx-quote-button');
+    const status = document.getElementById('skydropx-quote-status');
+    const list = document.getElementById('skydropx-rate-list');
+    const rateInput = document.getElementById('skydropx-rate-id');
+    const shippingTotal = document.getElementById('checkout-shipping');
+    const grandTotal = document.getElementById('checkout-grand-total');
+    const method = document.getElementById('delivery-method');
+    if (!button || !status || !list || !rateInput || !shippingTotal || !grandTotal || !method) return;
+    const subtotal = Number(grandTotal.dataset.subtotal || 0);
+    const formatMoney = (value) => new Intl.NumberFormat('es-MX', { maximumFractionDigits: 2 }).format(value);
+    const field = (name) => document.querySelector(`[name="${name}"]`);
+    let quoteTimer = null;
+    let requestSerial = 0;
+    const resetRate = () => {
+      rateInput.value = '';
+      window.skydropxShippingRate = 0;
+    };
+    const updateTotals = (price) => {
+      const local = method.value === 'local';
+      if (local) {
+        shippingTotal.textContent = '0 MXN';
+        grandTotal.textContent = `${formatMoney(subtotal)} MXN`;
+      } else if (price > 0) {
+        shippingTotal.textContent = `${formatMoney(price)} MXN`;
+        grandTotal.textContent = `${formatMoney(subtotal + price)} MXN`;
+      } else {
+        shippingTotal.textContent = 'Pendiente';
+        grandTotal.textContent = 'Cotiza envío';
+      }
+    };
+    const currentDestination = () => ({
+      address: field('direccion')?.value.trim() || '',
+      neighborhood: field('colonia')?.value.trim() || '',
+      city: field('ciudad')?.value.trim() || '',
+      state: field('estado')?.value.trim() || '',
+      postal_code: field('codigo_postal')?.value.trim() || '',
+    });
+    const quote = async (automatic = false) => {
+      const destination = currentDestination();
+      if (method.value === 'local') return;
+      if (!destination.neighborhood || !destination.city || !destination.state || !/^\d{5}$/.test(destination.postal_code)) {
+        if (!automatic) status.textContent = 'Completa ciudad, estado, colonia y código postal antes de cotizar.';
+        return;
+      }
+      const requestId = ++requestSerial;
+      button.disabled = true;
+      status.textContent = 'Consultando tarifas exactas de Skydropx…';
+      list.replaceChildren();
+      resetRate();
+      updateTotals(0);
+      try {
+        const response = await fetch('{{ url_for("quote_shipping") }}', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json', 'X-CSRF-Token': panel.dataset.csrf || ''},
+          body: JSON.stringify(destination),
+        });
+        const data = await response.json();
+        if (requestId !== requestSerial) return;
+        if (!response.ok) throw new Error(data.error || 'No pudimos obtener tarifas.');
+        const rates = Array.isArray(data.rates) ? data.rates.slice().sort((a, b) => Number(a.price || 0) - Number(b.price || 0)) : [];
+        if (!rates.length) throw new Error('Skydropx no devolvió tarifas para ese destino.');
+        status.textContent = 'Elige una tarifa; el total se actualiza automáticamente.';
+        rates.forEach((rate, index) => {
+          const label = document.createElement('label');
+          label.className = 'skydropx-rate-option';
+          const radio = document.createElement('input');
+          radio.type = 'radio';
+          radio.name = 'skydropx-rate-choice';
+          radio.value = rate.id;
+          radio.checked = index === 0;
+          const text = document.createElement('span');
+          const deliveryDays = Number(rate.days || 0);
+          text.textContent = `${rate.carrier || 'Paquetería'}${rate.service ? ` · ${rate.service}` : ''}${deliveryDays > 0 ? ` · ${deliveryDays} días` : ''} — ${formatMoney(Number(rate.price || 0))} MXN`;
+          label.append(radio, text);
+          radio.addEventListener('change', () => {
+            rateInput.value = rate.id;
+            window.skydropxShippingRate = Number(rate.price || 0);
+            updateTotals(window.skydropxShippingRate);
+          });
+          list.append(label);
+          if (radio.checked) radio.dispatchEvent(new Event('change'));
+        });
+      } catch (error) {
+        if (requestId !== requestSerial) return;
+        status.textContent = error.message || 'No pudimos obtener tarifas de Skydropx.';
+        resetRate();
+        updateTotals(0);
+      } finally {
+        if (requestId === requestSerial) button.disabled = false;
+      }
+    };
+    const scheduleQuote = () => {
+      clearTimeout(quoteTimer);
+      const destination = currentDestination();
+      const complete = destination.neighborhood && destination.city && destination.state && /^\d{5}$/.test(destination.postal_code);
+      if (method.value === 'local' || !complete) return;
+      quoteTimer = setTimeout(() => quote(true), 550);
+    };
+    button.addEventListener('click', () => quote(false));
+    ['direccion', 'ciudad', 'estado', 'colonia', 'codigo_postal'].forEach((name) => {
+      field(name)?.addEventListener('input', () => {
+        requestSerial += 1;
+        resetRate();
+        list.replaceChildren();
+        status.textContent = '';
+        updateTotals(0);
+        scheduleQuote();
+      });
+    });
+    scheduleQuote();
+  })();
+
+</script>
+{% endblock %}
+
+
+

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Contacto | FR BEISSHOP{% endblock %}
+{% block content %}
+<section class="help-page section-wrap">
+  <p class="eyebrow eyebrow-dark">FR BEISSHOP / CONTACTO</p>
+  <h1>Hablemos de tu equipo.</h1>
+  <p class="help-lead">Te ayudamos con medidas, existencias, personalizaci&oacute;n y env&iacute;os desde Mexicali.</p>
+  <div class="help-grid">
+    {% if whatsapp_url %}
+      <a class="help-card help-card-clickable" href="{{ whatsapp_url }}" target="_blank" rel="noopener noreferrer" aria-label="Abrir WhatsApp al {{ whatsapp_display_number }}">
+        <span class="help-card-icon" aria-hidden="true">&#9742;</span>
+        <h2>WhatsApp</h2>
+        <p>Escr&iacute;benos si necesitas ayuda con tu pedido o con la entrega.</p>
+        <strong class="help-card-action">{{ whatsapp_display_number }} <span aria-hidden="true">&#8599;</span></strong>
+      </a>
+    {% else %}
+      <article class="help-card">
+        <span class="help-card-icon" aria-hidden="true">&#9742;</span>
+        <h2>WhatsApp</h2>
+        <p>El WhatsApp de la tienda se habilitar&aacute; cuando se configure el n&uacute;mero del negocio.</p>
+      </article>
+    {% endif %}
+    {% if shop_email %}
+      <a class="help-card help-card-clickable" href="mailto:{{ shop_email }}" aria-label="Enviar correo a {{ shop_email }}">
+        <span class="help-card-icon" aria-hidden="true">&#9993;</span>
+        <h2>Correo</h2>
+        <p>Para dudas de pedidos o cambios:</p>
+        <strong class="help-card-action">{{ shop_email }} <span aria-hidden="true">&#8599;</span></strong>
+      </a>
+    {% else %}
+      <article class="help-card">
+        <span class="help-card-icon" aria-hidden="true">&#9993;</span>
+        <h2>Correo</h2>
+        <p>Configura el correo de la tienda para recibir confirmaciones autom&aacute;ticas.</p>
+      </article>
+    {% endif %}
+  </div>
+  <section class="legal-identity contact-provider-details" aria-label="Informaci&oacute;n del proveedor">
+    <strong>Informaci&oacute;n del proveedor</strong>
+    <span>Nombre comercial: FR BEISSHOP</span>
+    {% if business_legal_name %}<span>Titular: {{ business_legal_name }}</span>{% endif %}
+    {% if business_rfc %}<span>RFC: {{ business_rfc }}</span>{% endif %}
+    {% if business_physical_address %}<span>Domicilio: {{ business_physical_address }}</span>{% endif %}
+    <span>Atenci&oacute;n desde Mexicali, Baja California.</span>
+    {% if not business_legal_name or not business_rfc or not business_physical_address %}
+      <p class="legal-pending-note">Antes de publicar la tienda, completa el nombre legal del titular, el RFC y el domicilio comercial en la configuraci&oacute;n del sitio.</p>
+    {% endif %}
+  </section>
+  <p class="contact-legal-links">Consulta tambi&eacute;n los <a href="{{ url_for('terms_page') }}">T&eacute;rminos de compra</a>, el <a href="{{ url_for('returns_page') }}">proceso de cambios y devoluciones</a> y el <a href="{{ url_for('privacy_page') }}">Aviso de privacidad</a>.</p>
+</section>
+{% endblock %}
+
+

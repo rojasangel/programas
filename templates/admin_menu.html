@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+{% block title %}Menú de administración | FR BEISSHOP{% endblock %}
+{% block content %}
+<section class="admin-page section-wrap">
+  <div class="admin-heading">
+    <div>
+      <p class="eyebrow eyebrow-dark">FR BEISSHOP / ADMINISTRACIÓN</p>
+      <h1>¿Qué quieres hacer?</h1>
+      <p class="admin-intro">Elige una opción para continuar con la tienda.</p>
+    </div>
+    <form action="{{ url_for('admin_logout') }}" method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="text-button" type="submit">Cerrar sesión</button>
+    </form>
+  </div>
+
+  <div class="admin-summary" aria-label="Resumen del catálogo">
+    <a href="{{ url_for('admin') }}#productos"><strong>{{ total_products }}</strong><span>Productos</span></a>
+    <a href="{{ url_for('admin', seccion='Béisbol') }}#productos"><strong>{{ baseball_products }}</strong><span>Béisbol</span></a>
+    <a href="{{ url_for('admin', seccion='Softball') }}#productos"><strong>{{ softball_products }}</strong><span>S&oacute;ftbol</span></a>
+  </div>
+
+  <section class="admin-dashboard" aria-label="Resumen de la tienda">
+    <div class="admin-dashboard-heading"><div><p class="eyebrow eyebrow-dark">VISTA GENERAL</p><h2>Rendimiento de la tienda</h2></div><a class="admin-action" href="{{ url_for('admin_reports') }}">Ver reportes completos</a></div>
+    <div class="admin-report-grid">
+      <a class="admin-report-card admin-report-card-link" href="{{ url_for('admin_orders') }}">
+        <span>Ventas de hoy</span><strong>{{ today_revenue|mxn }}</strong><small>MXN · Ver pedidos</small>
+      </a>
+      <a class="admin-report-card admin-report-card-link" href="{{ url_for('admin_reports') }}">
+        <span>Ventas del mes</span><strong>{{ month_revenue|mxn }}</strong><small>MXN · Ver reportes</small>
+      </a>
+      <a class="admin-report-card admin-report-card-link" href="{{ url_for('admin', _anchor='productos') }}">
+        <span>Alertas de inventario</span><strong>{{ low_stock|length }}</strong><small>Máximo {{ low_stock_threshold }} unidades</small>
+      </a>
+      <a class="admin-report-card admin-report-card-link" href="{{ url_for('admin_payments') }}">
+        <span>Pagos</span><strong>{% if stripe_enabled %}Stripe activo{% else %}Revisar Stripe{% endif %}</strong><small>Gestionar pagos</small>
+      </a>
+      <a class="admin-report-card admin-report-card-link" href="{{ url_for('admin_email_settings') }}">
+        <span>Correos</span><strong>{% if email_enabled %}Notificaciones activas{% else %}Pendiente de configurar{% endif %}</strong><small>Configurar confirmaciones</small>
+      </a>
+      <a class="admin-report-card admin-report-card-link" href="{{ url_for('admin_payments') }}">
+        <span>Publicaci&oacute;n</span><strong>{% if production_mode and stripe_webhook_enabled %}Lista para revisar{% else %}Falta configuraci&oacute;n{% endif %}</strong><small>{% if production_mode %}Modo producci&oacute;n{% else %}Modo desarrollo{% endif %} &middot; Webhook Stripe {% if stripe_webhook_enabled %}activo{% else %}pendiente{% endif %}</small>
+      </a>
+    </div>
+    <div class="admin-dashboard-columns">
+      <a class="admin-dashboard-panel admin-dashboard-panel-link" href="{{ url_for('admin_reports') }}">
+        <div class="admin-dashboard-heading"><h3>Ventas por categoría</h3><span class="admin-action">Ver reportes</span></div>
+        {% if sales_by_category %}{% for item in sales_by_category %}<div class="admin-bar-row"><span>{{ item.name }}</span><div><i style="width: {{ item.width }}%"></i></div><strong>{{ item.total|mxn }}</strong></div>{% endfor %}{% else %}<p class="admin-empty-state">Aún no hay ventas registradas.</p>{% endif %}
+      </a>
+      <a class="admin-dashboard-panel admin-dashboard-panel-link" href="{{ url_for('admin_orders') }}">
+        <div class="admin-dashboard-heading"><h3>Pedidos recientes</h3><span class="admin-action">Ver todos</span></div>
+        {% if recent_orders %}{% for order in recent_orders %}<div class="admin-mini-row"><span><strong>#{{ order.id }}</strong> {{ order.customer_name }}<small>{{ order.created_at }}</small></span><strong>{{ order.total|mxn }}<small>{{ order.status }}</small></strong></div>{% endfor %}{% else %}<p class="admin-empty-state">No hay pedidos recientes.</p>{% endif %}
+      </a>
+    </div>
+    <a id="inventario-bajo" class="admin-dashboard-panel admin-dashboard-panel-link inventory-alerts" href="{{ url_for('admin', _anchor='productos') }}">
+      <div class="admin-dashboard-heading"><h3>Inventario bajo</h3><span class="admin-action">Administrar catálogo</span></div>
+      {% if low_stock %}<div class="admin-inventory-list">{% for product in low_stock %}<div class="admin-mini-row"><span><strong>{{ product.name }}</strong><small>FR-0{{ product.id }}</small></span><strong class="{% if product.stock == 0 %}inventory-out{% endif %}">{{ product.stock }} disponibles</strong><span class="admin-action">Reponer en catálogo</span></div>{% endfor %}</div>{% else %}<p class="admin-empty-state">No hay alertas de inventario.</p>{% endif %}
+    </a>
+  </section>
+
+  <div class="admin-menu-grid">
+    <a class="admin-menu-card" href="{{ url_for('admin_homepage') }}">
+      <span class="admin-menu-icon" aria-hidden="true">✎</span>
+      <h2>Editar página de inicio</h2>
+      <p>Cambia fotos, títulos, información y botones. Revisa una vista previa antes de publicar.</p>
+      <span class="admin-menu-action">Personalizar inicio <span aria-hidden="true">→</span></span>
+    </a>
+    <a class="admin-menu-card" href="{{ url_for('admin', _anchor='agregar-producto') }}">
+      <span class="admin-menu-icon" aria-hidden="true">+</span>
+      <h2>Agregar producto</h2>
+      <p>Registra un artículo nuevo y asígnalo a Béisbol o Sóftbol.</p>
+      <span class="admin-menu-action">Ir al formulario <span aria-hidden="true">→</span></span>
+    </a>
+    <a class="admin-menu-card" href="{{ url_for('admin', _anchor='productos') }}">
+      <span class="admin-menu-icon" aria-hidden="true">▤</span>
+      <h2>Administrar catálogo</h2>
+      <p>Revisa los productos actuales, edita sus datos o elimínalos.</p>
+      <span class="admin-menu-action">Ver productos <span aria-hidden="true">→</span></span>
+    </a>
+    <a class="admin-menu-card" href="{{ url_for('admin', _anchor='papelera') }}">
+      <span class="admin-menu-icon" aria-hidden="true">P</span>
+      <h2>Papelera de productos</h2>
+      <p>Consulta los productos eliminados y restauralos dentro de los 30 dias.</p>
+      <span class="admin-menu-action">{{ deleted_count }} en la papelera <span aria-hidden="true">→</span></span>
+    </a>
+    <a class="admin-menu-card" href="{{ url_for('admin', _anchor='desactivados') }}">
+      <span class="admin-menu-icon" aria-hidden="true">D</span>
+      <h2>Productos desactivados</h2>
+      <p>Consulta los productos ocultos de la tienda y vuelve a activarlos cuando quieras.</p>
+      <span class="admin-menu-action">{{ disabled_count }} desactivados <span aria-hidden="true">→</span></span>
+    </a>
+    <a class="admin-menu-card" href="{{ url_for('admin_brand') }}">
+      <span class="admin-menu-icon" aria-hidden="true">★</span>
+      <h2>Nuestra marca</h2>
+      <p>Selecciona los productos que aparecerán en esta sección de la tienda.</p>
+      <span class="admin-menu-action">Elegir productos <span aria-hidden="true">→</span></span>
+    </a>
+    <a class="admin-menu-card" href="{{ url_for('admin', _anchor='estadisticas') }}">
+      <span class="admin-menu-icon" aria-hidden="true">↗</span>
+      <h2>Ver estadísticas</h2>
+      <p>Consulta cuál es el producto más visto y cuántas visitas tiene.</p>
+      <span class="admin-menu-action">Ver estadísticas <span aria-hidden="true">→</span></span>
+    </a>
+    <a class="admin-menu-card" href="{{ url_for('admin_auction') }}">
+      <span class="admin-menu-icon" aria-hidden="true">⚾</span>
+      <h2>Administrar subasta</h2>
+      <p>Agrega artículos, precios, imágenes, descripciones y fechas de cierre.</p>
+      <span class="admin-menu-action">Gestionar subasta <span aria-hidden="true">→</span></span>
+    </a>
+    <a class="admin-menu-card" href="{{ url_for('admin_orders') }}">
+      <span class="admin-menu-icon" aria-hidden="true">▣</span>
+      <h2>Pedidos</h2>
+      <p>Revisa pedidos, datos de envío y cambia su estado.</p>
+      <span class="admin-menu-action">{{ pending_orders }} pendientes <span aria-hidden="true">→</span></span>
+    </a>
+    <a class="admin-menu-card" href="{{ url_for('admin_payments') }}">
+      <span class="admin-menu-icon" aria-hidden="true">$</span>
+      <h2>Pagos Stripe</h2>
+      <p>Consulta pagos en línea y solicita reembolsos.</p>
+      <span class="admin-menu-action">Gestionar pagos <span aria-hidden="true">→</span></span>
+    </a>
+    <a class="admin-menu-card" href="{{ url_for('admin_email_settings') }}">
+      <span class="admin-menu-icon" aria-hidden="true">@</span>
+      <h2>Correo de pedidos</h2>
+      <p>Configura confirmaciones de compra, recuperación y avisos de envío.</p>
+      <span class="admin-menu-action">Configurar correo <span aria-hidden="true">→</span></span>
+    </a>
+    <a class="admin-menu-card" href="{{ url_for('admin_google_settings') }}">
+      <span class="admin-menu-icon" aria-hidden="true">G</span>
+      <h2>Inicio con Google</h2>
+      <p>Activa el acceso de clientes con su cuenta de Google.</p>
+      <span class="admin-menu-action">Configurar Google <span aria-hidden="true">→</span></span>
+    </a>
+    <a class="admin-menu-card" href="{{ url_for('admin_shipping_settings') }}">
+      <span class="admin-menu-icon" aria-hidden="true">⌁</span>
+      <h2>Paquetería</h2>
+      <p>Configura Skydropx, el origen de los pedidos y las cotizaciones de envío.</p>
+      <span class="admin-menu-action">{% if shipping_enabled %}Skydropx activo{% else %}Configurar envíos{% endif %} <span aria-hidden="true">→</span></span>
+    </a>
+    <a class="admin-menu-card" href="{{ url_for('admin_coupons') }}">
+      <span class="admin-menu-icon" aria-hidden="true">%</span>
+      <h2>Promociones</h2>
+      <p>Crea cupones de porcentaje o cantidad fija.</p>
+      <span class="admin-menu-action">Gestionar cupones <span aria-hidden="true">→</span></span>
+    </a>
+    <a class="admin-menu-card" href="{{ url_for('admin_users') }}">
+      <span class="admin-menu-icon" aria-hidden="true">◎</span>
+      <h2>Usuarios</h2>
+      <p>Consulta las cuentas registradas y su actividad de compra.</p>
+      <span class="admin-menu-action">{{ user_count }} cuentas <span aria-hidden="true">→</span></span>
+    </a>
+    <a class="admin-menu-card" href="{{ url_for('admin_reports') }}">
+      <span class="admin-menu-icon" aria-hidden="true">↗</span>
+      <h2>Reportes</h2>
+      <p>Consulta ventas, inventario, visitas y actividad de subastas.</p>
+      <span class="admin-menu-action">Ver reportes <span aria-hidden="true">→</span></span>
+    </a>
+    <a class="admin-menu-card" href="{{ url_for('admin_activity') }}">
+      <span class="admin-menu-icon" aria-hidden="true">⌁</span>
+      <h2>Actividad y respaldos</h2>
+      <p>Revisa cambios del panel, exporta pedidos y descarga una copia de la tienda.</p>
+      <span class="admin-menu-action">Ver actividad <span aria-hidden="true">→</span></span>
+    </a>
+  </div>
+</section>
+{% endblock %}
+

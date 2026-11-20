@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}{{ page_title|striptags }} | FR BEISSHOP{% endblock %}
+{% block content %}
+<section class="legal-page section-wrap">
+  <p class="eyebrow eyebrow-dark">FR BEISSHOP / INFORMACI&Oacute;N</p>
+  <h1>{{ page_title|safe }}</h1>
+  {% if page_kind == 'privacy' %}
+    <p><strong>Versi&oacute;n: 29 de octubre de 2026.</strong> Este aviso explica c&oacute;mo FR BEISSHOP trata la informaci&oacute;n personal que recopila en la tienda en l&iacute;nea, al crear una cuenta, participar en una subasta o contactar al negocio.</p>
+    <div class="legal-identity">
+      <strong>Responsable del tratamiento</strong>
+      <span>Nombre o raz&oacute;n social: {{ business_legal_name or 'Dato pendiente de completar antes de publicar la tienda.' }}</span>
+      <span>Nombre comercial: FR BEISSHOP</span>
+      <span>RFC: {{ business_rfc or 'Dato pendiente de completar antes de publicar la tienda.' }}</span>
+      <span>Domicilio para notificaciones: {{ business_physical_address or 'Domicilio completo pendiente de completar antes de publicar la tienda.' }}</span>
+      <span>Contacto de privacidad: <a href="mailto:{{ privacy_contact_email }}">{{ privacy_contact_email }}</a>{% if privacy_contact_phone %} · WhatsApp <a href="https://wa.me/{{ privacy_contact_phone }}">{{ whatsapp_display_number }}</a>{% endif %}</span>
+    </div>
+    {% if not business_legal_name or not business_rfc or not business_physical_address %}
+      <p class="legal-pending-note"><strong>Pendiente para publicar:</strong> falta completar el nombre legal del titular, su RFC y el domicilio completo. No se inventaron esos datos.</p>
+    {% endif %}
+    <h2>Datos que podemos recopilar</h2>
+    <p>Nombre, correo, tel&eacute;fono, contrase&ntilde;a cifrada, direcci&oacute;n y datos de entrega; productos, pedidos, pagos y consultas; pujas e historial de subasta; y opciones de personalizaci&oacute;n del bat, incluido el nombre, n&uacute;mero, colores y la imagen de vista previa. Si eliges iniciar sesi&oacute;n con Google, recibimos identificador, nombre y correo autorizados por ese servicio. No solicitamos ni guardamos el n&uacute;mero completo de tu tarjeta.</p>
+    <h2>Para qu&eacute; usamos la informaci&oacute;n</h2>
+    <ul>
+      <li>Crear y proteger tu cuenta, responder solicitudes y administrar pedidos, subastas, entregas, cambios y garant&iacute;as.</li>
+      <li>Procesar pagos y prevenir operaciones no autorizadas.</li>
+      <li>Enviar confirmaciones, avisos de pago o env&iacute;o y, al crear una cuenta, el correo de bienvenida con la oferta inicial anunciada.</li>
+      <li>Cumplir obligaciones contables, fiscales y atender reclamaciones.</li>
+    </ul>
+    <h2>Proveedores y transferencias</h2>
+    <p>Compartimos solo los datos necesarios con Stripe para procesar pagos, Skydropx y transportistas para cotizar o realizar entregas, Google cuando usas su inicio de sesi&oacute;n y el proveedor de correo para enviar mensajes. Estos servicios pueden procesar datos en otros pa&iacute;ses conforme a sus propias condiciones y avisos de privacidad. No vendemos ni rentamos tus datos.</p>
+    <h2>Conservaci&oacute;n y seguridad</h2>
+    <p>Los datos de cuenta se conservan mientras la cuenta est&eacute; activa. La informaci&oacute;n de pedidos y comprobantes puede conservarse durante los plazos necesarios para cumplir obligaciones legales, fiscales, contables, de garant&iacute;a y defensa de reclamaciones. Aplicamos controles t&eacute;cnicos y administrativos para proteger la informaci&oacute;n; ning&uacute;n medio de transmisi&oacute;n o almacenamiento puede garantizar seguridad absoluta.</p>
+    <h2>Derechos ARCO y contacto</h2>
+    <p>Puedes solicitar acceso, rectificaci&oacute;n, cancelaci&oacute;n u oposici&oacute;n al tratamiento de tus datos, o revocar el consentimiento cuando corresponda, escribiendo a <a href="mailto:{{ privacy_contact_email }}">{{ privacy_contact_email }}</a>. Incluye tu nombre, el correo asociado a la cuenta, el derecho que deseas ejercer y una forma de localizar la informaci&oacute;n. Podremos pedir datos para verificar tu identidad. La cancelaci&oacute;n puede estar limitada cuando debamos conservar registros por obligaciones legales o para atender una compra.</p>
+    <h2>Cookies</h2>
+    <p>La tienda utiliza cookies t&eacute;cnicas necesarias para mantener la sesi&oacute;n, proteger formularios y recordar el carrito. Si se incorporan herramientas de medici&oacute;n o publicidad, este aviso y los controles del sitio deber&aacute;n actualizarse antes de activarlas.</p>
+  {% elif page_kind == 'terms' %}
+    <p>Al confirmar una compra aceptas estas condiciones y la <a href="{{ url_for('privacy_page') }}">informaci&oacute;n de privacidad</a>. Antes de pagar puedes revisar los art&iacute;culos, cantidad, descuentos, entrega, costo de env&iacute;o y total en pesos mexicanos.</p>
+    <div class="legal-identity">
+      <strong>Proveedor</strong>
+      <span>FR BEISSHOP{% if business_legal_name %} · {{ business_legal_name }}{% endif %}</span>
+      {% if business_rfc %}<span>RFC: {{ business_rfc }}</span>{% endif %}
+      {% if business_physical_address %}<span>Domicilio: {{ business_physical_address }}</span>{% endif %}
+      <span>Contacto: <a href="mailto:{{ privacy_contact_email }}">{{ privacy_contact_email }}</a>{% if privacy_contact_phone %} · WhatsApp {{ whatsapp_display_number }}{% endif %}</span>
+    </div>
+    {% if not business_legal_name or not business_rfc or not business_physical_address %}
+      <p class="legal-pending-note"><strong>Datos del proveedor pendientes:</strong> se deben completar el nombre legal, RFC y domicilio antes de publicar la tienda.</p>
+    {% endif %}
+    <h2>Productos, precios y existencias</h2>
+    <p>Las fichas muestran las caracter&iacute;sticas disponibles y el precio del art&iacute;culo en MXN. Los cupones indican sus condiciones y vigencia al aplicarse. El inventario se confirma al preparar el pago; si una unidad deja de estar disponible, contactaremos al comprador para resolver el pedido y, cuando corresponda, devolver el pago.</p>
+    <h2>Pedidos y pago</h2>
+    <p>Los pagos en l&iacute;nea se procesan en Stripe Checkout. El pedido se considera pagado cuando Stripe confirma la operaci&oacute;n; el correo de confirmaci&oacute;n y el n&uacute;mero de pedido se env&iacute;an al correo proporcionado. FR BEISSHOP no almacena los datos completos de la tarjeta.</p>
+    <h2>Entrega y cargos</h2>
+    <p>La entrega personal sin costo puede estar disponible en Mexicali. Para env&iacute;os, el sistema muestra una tarifa estimada o las tarifas disponibles seg&uacute;n el c&oacute;digo postal. El costo y m&eacute;todo de entrega aplicables se muestran antes de enviar al comprador a Stripe. El tiempo final depende del servicio de mensajer&iacute;a y de la confirmaci&oacute;n de la compra.</p>
+    <h2>Subastas</h2>
+    <p>Al enviar una puja, aceptas las <a href="{{ url_for('auction_rules') }}">reglas de subasta</a>. La puja m&aacute;s alta v&aacute;lida al cierre gana. El ganador debe pagar dentro de 3 d&iacute;as; si no lo hace, la oferta se puede presentar una sola vez al siguiente postor v&aacute;lido, quien tendr&aacute; el mismo plazo. El total de art&iacute;culo y entrega se muestra antes del pago. Las reglas no establecen multas autom&aacute;ticas por falta de pago.</p>
+    <h2>Atenci&oacute;n y reclamaciones</h2>
+    <p>Para aclaraciones, escribe al <a href="mailto:{{ privacy_contact_email }}">{{ privacy_contact_email }}</a> o contacta por <a href="https://wa.me/{{ privacy_contact_phone }}">WhatsApp al {{ whatsapp_display_number }}</a>. Tambi&eacute;n puedes consultar nuestra <a href="{{ url_for('returns_page') }}">pol&iacute;tica de cambios y devoluciones</a>.</p>
+  {% else %}
+    <p>Para solicitar un cambio, devoluci&oacute;n o hacer v&aacute;lida una garant&iacute;a, cont&aacute;ctanos en los canales indicados al final de esta p&aacute;gina. Incluye el n&uacute;mero de pedido, una descripci&oacute;n del problema y, si ayuda a revisarlo, fotograf&iacute;as del producto.</p>
+    <h2>Revisi&oacute;n del caso</h2>
+    <p>Revisaremos cada solicitud conforme a la ley aplicable, las condiciones ofrecidas y la garant&iacute;a del producto. Esta pol&iacute;tica no elimina ni reduce los derechos que te correspondan como consumidor. La personalizaci&oacute;n de un art&iacute;culo no anula por s&iacute; sola los derechos que establezca la ley.</p>
+    <h2>Devoluciones y reembolsos</h2>
+    <p>Cuando proceda un reembolso, te informaremos el importe y el medio por el que se tramitar&aacute;. Los reembolsos de pagos con Stripe se procesan a trav&eacute;s del medio de pago original, sujetos a los tiempos de la entidad financiera. No env&iacute;es un art&iacute;culo de vuelta antes de recibir instrucciones de la tienda.</p>
+    <h2>Contacto</h2>
+    <p>Correo: <a href="mailto:{{ privacy_contact_email }}">{{ privacy_contact_email }}</a>.{% if privacy_contact_phone %} WhatsApp: <a href="https://wa.me/{{ privacy_contact_phone }}">{{ whatsapp_display_number }}</a>.{% endif %}</p>
+  {% endif %}
+  <a class="back-link" href="{{ url_for('contact_page') }}">Ir a contacto</a>
+</section>
+{% endblock %}
+

@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}Correo de pedidos | FR BEISSHOP{% endblock %}
+{% block content %}
+<section class="admin-page section-wrap admin-email-page">
+  <div class="admin-heading">
+    <div>
+      <p class="eyebrow eyebrow-dark">FR BEISSHOP / ADMINISTRACIÓN / CORREO</p>
+      <h1>Correo de pedidos</h1>
+      <p class="admin-intro">Configura las confirmaciones de compra, recuperación de contraseña y avisos de envío.</p>
+    </div>
+    <a class="admin-cancel" href="{{ url_for('admin_menu') }}">Volver al menú</a>
+  </div>
+
+  <div class="admin-email-status {% if email_enabled %}is-ready{% endif %}" role="status">
+    <strong>{% if email_enabled %}Notificaciones activas{% else %}Pendiente de configurar{% endif %}</strong>
+    <span>{% if email_enabled %}El sistema puede enviar correos transaccionales.{% else %}Agrega los datos SMTP de tu proveedor de correo para activar los envíos.{% endif %}</span>
+  </div>
+
+  <form class="admin-form" method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="admin-fields">
+      <label>Servidor SMTP
+        <input name="smtp_host" value="{{ smtp_host }}" placeholder="smtp.gmail.com" autocomplete="off">
+      </label>
+      <label>Puerto
+        <input name="smtp_port" type="number" min="1" max="65535" value="{{ smtp_port }}">
+      </label>
+      <label>Usuario SMTP
+        <input name="smtp_user" type="email" value="{{ smtp_user }}" placeholder="tienda@dominio.com" autocomplete="username">
+      </label>
+      <label>Contraseña o clave de aplicación
+        <input name="smtp_password" type="password" placeholder="Déjalo vacío para conservarla" autocomplete="new-password">
+      </label>
+      <label>Correo remitente
+        <input name="smtp_from" type="email" value="{{ smtp_from }}" placeholder="tienda@dominio.com">
+      </label>
+      <label>Correo de la tienda
+        <input name="shop_email" type="email" value="{{ shop_email }}" placeholder="ventas@dominio.com">
+      </label>
+      <label>Responder a
+        <input name="email_reply_to" type="email" value="{{ email_reply_to }}" placeholder="ventas@dominio.com">
+      </label>
+      <label class="admin-checkbox admin-wide">
+        <input type="checkbox" name="email_notifications" value="1" {% if email_enabled %}checked{% endif %}>
+        Activar notificaciones transaccionales
+      </label>
+    </div>
+    <div class="admin-form-actions">
+      <button class="button button-dark" type="submit" name="accion" value="save">Guardar configuración</button>
+    </div>
+  </form>
+
+  <form class="admin-form admin-email-test-form" method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="accion" value="test">
+    <label>Enviar correo de prueba
+      <input name="test_email" type="email" placeholder="tu-correo@ejemplo.com" required>
+    </label>
+    <p class="admin-intro">Guarda primero la configuración y después usa esta prueba para confirmar la conexión SMTP.</p>
+    <button class="button button-light" type="submit">Enviar prueba</button>
+  </form>
+  <form class="admin-form admin-email-test-form admin-email-welcome-form" method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="accion" value="welcome">
+    <label>Enviar correo de bienvenida
+      <input name="welcome_email" type="email" placeholder="cliente@ejemplo.com" required>
+    </label>
+    <label>Nombre (opcional)
+      <input name="welcome_name" type="text" maxlength="120" placeholder="Nombre del cliente">
+    </label>
+    <p class="admin-intro">Envía el mismo mensaje de bienvenida del registro, con el código de 10% para primera compra.</p>
+    <button class="button button-dark" type="submit">Enviar bienvenida</button>
+  </form>
+  <div class="admin-email-flow-tests">
+    <div>
+      <p class="eyebrow eyebrow-dark">PRUEBAS DE FLUJOS</p>
+      <h2>Confirmación y recuperación</h2>
+      <p class="admin-intro">Envía ambos mensajes a tu propio correo para comprobar que los enlaces y el diseño llegan correctamente.</p>
+    </div>
+    <form class="admin-form admin-email-test-form" method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="accion" value="verification_test">
+      <label>Correo para confirmar
+        <input name="flow_email" type="email" placeholder="tu-correo@ejemplo.com" required>
+      </label>
+      <button class="button button-light" type="submit">Probar confirmación</button>
+    </form>
+    <form class="admin-form admin-email-test-form" method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="accion" value="recovery_test">
+      <label>Correo para recuperación
+        <input name="flow_email" type="email" placeholder="tu-correo@ejemplo.com" required>
+      </label>
+      <button class="button button-light" type="submit">Probar recuperación</button>
+    </form>
+  </div>
+</section>
+{% endblock %}
+

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Usuarios | FR BEISSHOP{% endblock %}
+{% block content %}
+<section class="admin-page section-wrap">
+  <div class="admin-heading">
+    <div>
+      <p class="eyebrow eyebrow-dark">FR BEISSHOP / ADMINISTRACION / USUARIOS</p>
+      <h1>Usuarios</h1>
+      <p class="admin-intro">Cuentas registradas y actividad de compra.</p>
+    </div>
+    <a class="admin-cancel" href="{{ url_for('admin_menu') }}">Volver al men&uacute;</a>
+  </div>
+  {% if users %}
+    <div class="admin-users-table">
+      <div class="admin-users-row admin-users-head"><span>Nombre</span><span>Correo</span><span>Registro</span><span>Pedidos</span><span>Total</span><span>Detalle</span><span>Acci&oacute;n</span></div>
+      {% for user in users %}
+        <div class="admin-users-row">
+          <strong>{{ user.name }}</strong>
+          <span>{{ user.email }}{% if user.google_sub %}<small class="admin-google-badge">Google</small>{% endif %}</span>
+          <span>{{ user.created_at }}</span>
+          <span>{{ user.order_count }}</span>
+          <span>{{ user.total_spent|mxn }} MXN</span>
+          <a class="admin-action" href="{{ url_for('admin_user_detail', user_id=user.id) }}">Ver</a>
+          <form action="{{ url_for('delete_user', user_id=user.id) }}" method="post" onsubmit="return confirm('¿Eliminar esta cuenta?');">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="admin-action admin-delete" type="submit">Eliminar</button>
+          </form>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="admin-empty-state">Todav&iacute;a no hay usuarios registrados.</p>
+  {% endif %}
+</section>
+{% endblock %}
+

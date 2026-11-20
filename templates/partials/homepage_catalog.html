@@ -1,0 +1,141 @@
+{% if not is_homepage or home_content.catalog.enabled %}
+<section data-home-block-key="catalog" {% if is_homepage %}style="{{ home_style(home_content.catalog) }}" {% endif %}class="catalog section-wrap {% if is_homepage %}home-designed home-font-{{ home_content.catalog.font_family }}{% endif %} {% if active_category in ['Béisbol', 'Softball'] %}catalog-section-page{% endif %}" id="catalogo">
+  {% if active_category not in ['Béisbol', 'Softball'] %}
+    <div class="section-heading">
+      <div>
+        {% if not is_homepage or home_content.catalog.eyebrow or homepage_editing %}<p data-home-field="eyebrow" data-placeholder="Subtítulo del catálogo" class="eyebrow eyebrow-dark">{{ home_content.catalog.eyebrow if is_homepage else 'LA SELECCIÓN FR' }}</p>{% endif %}
+        <h2 data-home-field="title">{{ home_content.catalog.title if is_homepage else 'Equipo para entrar al juego' }}</h2>
+      </div>
+      <span class="result-count">{{ products|length }} <small>RESULTADOS</small></span>
+    </div>
+  {% endif %}
+  {% if active_category in ['Béisbol', 'Softball'] %}<div class="category-filter-row">{% endif %}
+  <form class="catalog-search{% if active_category in ['Béisbol', 'Softball'] %} catalog-search-collapsible{% if search_query %} is-open{% endif %}{% endif %}" action="{{ url_for('index') }}" method="get" role="search"{% if active_category in ['Béisbol', 'Softball'] %} aria-hidden="{{ 'false' if search_query else 'true' }}"{% endif %}>
+    {% if active_category != 'Todos' %}<input type="hidden" name="categoria" value="{{ active_category }}">{% endif %}
+    {# Al buscar desde una sección, la consulta debe revisar todas sus categorías. #}
+    {% if active_product_category != 'Todos' and active_category not in ['Béisbol', 'Softball'] %}<input type="hidden" name="tipo" value="{{ active_product_category }}">{% endif %}
+    <label class="visually-hidden" for="catalog-query">Buscar artículos</label>
+    <input id="catalog-query" type="search" name="q" value="{{ search_query }}" placeholder="Busca guantes, bates, pelotas..." maxlength="100">
+    {% if active_category not in ['Béisbol', 'Softball'] %}
+      <button class="catalog-search-submit" type="submit" aria-label="Buscar">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <circle cx="10.8" cy="10.8" r="6.4"></circle>
+          <path d="m16 16 4.2 4.2"></path>
+        </svg>
+        <span class="visually-hidden">Buscar</span>
+      </button>
+    {% endif %}
+  </form>
+  {% if active_category in ['Béisbol', 'Softball'] %}
+    <div class="category-filter-line">
+      <nav class="filters category-filters" aria-label="Filtrar productos por categoría">
+        {% for product_category in product_categories %}
+          <a class="filter-link {% if active_product_category == product_category %}is-active{% endif %}"
+             href="{{ url_for('index', categoria=active_category, tipo=product_category if product_category != 'Todos' else None, q=search_query or None) }}">
+            {{ product_category }}
+          </a>
+        {% endfor %}
+        <a class="filter-link sold-filter-link {% if sold_view %}is-active{% endif %}"
+           href="{{ url_for('index', categoria=active_category, tipo=active_product_category if active_product_category != 'Todos' else None, vista='vendidos') }}">
+          Vendidos{% if sold_count %} ({{ sold_count }}){% endif %}
+        </a>
+      </nav>
+      <button class="category-search-trigger" type="button" data-focus-catalog-search aria-expanded="{{ 'true' if search_query else 'false' }}" aria-label="{{ 'Ejecutar búsqueda' if search_query else 'Abrir buscador' }}" title="{{ 'Buscar' if search_query else 'Abrir buscador' }}">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <circle cx="10.8" cy="10.8" r="6.4"></circle>
+          <path d="m16 16 4.2 4.2"></path>
+        </svg>
+      </button>
+    </div>
+    </div>
+  {% endif %}
+  {% if active_category in ['Béisbol', 'Softball'] %}
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow eyebrow-dark">FR BEISSHOP / CATÁLOGO</p>
+        <h2>{% if sold_view %}Vendidos de {{ active_category|section_label }}{% else %}Equipo de {{ active_category|section_label }}{% endif %}</h2>
+        <p class="catalog-section-description">{% if sold_view %}Artículos que ya formaron parte de pedidos pagados.{% else %}Encuentra el equipo ideal para tu próximo juego.{% endif %}</p>
+        {% if active_product_category != 'Todos' or search_query %}
+          <a class="clear-catalog-filters" href="{{ url_for('index', categoria=active_category) }}">Ver todo el equipo</a>
+        {% endif %}
+      </div>
+      <span class="result-count">{{ products|length }} <small>RESULTADOS</small></span>
+    </div>
+  {% endif %}
+
+  <div class="product-grid">
+    {% for product in products %}
+      <article class="product-card">
+        <a class="product-image{% if product.image == '/static/bat-transition.png' %} product-image-contain{% endif %}" href="{{ url_for('product_detail', product_id=product.id) }}">
+          <img src="{{ product.image }}" alt="Imagen de ejemplo: {{ product.name }}" loading="lazy" onerror="this.onerror=null;this.src='{{ url_for('static', filename='logo.png') }}';">
+          <span class="product-tag">{% if sold_view %}Vendido{% else %}{{ product.tag }}{% endif %}</span>
+        </a>
+        <div class="product-info">
+          <div class="product-meta"><span>{{ product.category }} · {{ product.get('sections', [product.section])|map('section_label')|join(' y ') }}</span><span>FR-0{{ product.id }}</span></div>
+          <h3>{{ product.name }}</h3>
+          <p>{{ product.description }}</p>
+          {% if product.bat_measure and product.bat_weight %}
+            <p class="product-specs">Medida: {{ product.bat_measure }} pulgadas · Peso: {{ product.bat_weight }}</p>
+          {% endif %}
+          {% if product.glove_measure %}
+            <p class="product-specs">Medida del guante: {{ product.glove_measure }}</p>
+          {% endif %}
+          {% if product.guantaleta_size %}
+            <p class="product-specs">Talla de la guantaleta: {{ product.guantaleta_size }}</p>
+          {% endif %}
+          {% if product.grip_thickness %}
+            <p class="product-specs">Grosor: {{ product.grip_thickness }}</p>
+          {% endif %}
+          <p class="product-stock {% if sold_view or product.get('stock', 0) == 0 %}is-out{% endif %}">{% if sold_view %}{{ product.get('sold_quantity', 0) }} vendidos{% elif product.get('stock', 0) > 0 %}{{ product.get('stock', 0) }} disponibles{% else %}Agotado{% endif %}</p>
+          <div class="product-buy">
+            <strong>{% if product.get('price_on_request') %}Consultar{% else %}{{ product.price|mxn }} <small>MXN</small>{% endif %}</strong>
+            {% if sold_view %}
+              <span class="product-out-label">Vendido</span>
+            {% elif product.get('stock', 0) == 0 %}
+              <span class="product-out-label">Agotado</span>
+            {% elif product.get('price_on_request') %}
+              <span class="product-out-label">Precio por confirmar</span>
+            {% elif product.customizable %}
+              <a class="add-button customize-link customize-button" href="{{ url_for('product_detail', product_id=product.id) }}" aria-label="Personalizar {{ product.name }}">Personalizar</a>
+            {% else %}
+              <form action="{{ url_for('add_to_cart', product_id=product.id) }}" method="post">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button class="add-button" type="submit" aria-label="Agregar {{ product.name }} al carrito">+</button>
+              </form>
+            {% endif %}
+          </div>
+        </div>
+      </article>
+    {% else %}
+      <div class="search-empty">
+        <div class="empty-state-mark" aria-hidden="true">
+          <svg viewBox="0 0 64 64" fill="none">
+            <circle cx="32" cy="32" r="27" fill="currentColor" opacity=".1" />
+            <circle cx="32" cy="32" r="23" stroke="currentColor" stroke-width="2.5" />
+            <path d="M17 14c10 9 10 27 0 36M47 14c-10 9-10 27 0 36" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
+            <path d="m15 22 5 1m-6 6 5 1m-4 6 5 1m29-14-5 1m6 6-5 1m4 6-5 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          </svg>
+        </div>
+        {% if search_query %}
+          <div class="empty-state-copy">
+            <p class="eyebrow eyebrow-dark">BÚSQUEDA</p>
+            <h3>No encontramos ese artículo</h3>
+            <p>Prueba con otro nombre o cambia la categoría seleccionada.</p>
+            <a class="empty-state-link" href="{{ url_for('index', categoria=active_category if active_category != 'Todos' else None) }}">Limpiar búsqueda <span aria-hidden="true">→</span></a>
+          </div>
+        {% else %}
+          <div class="empty-state-copy">
+            <p class="eyebrow eyebrow-dark">{{ active_category if active_category != 'Todos' else 'FR BEISSHOP' }}</p>
+            <h3>Aún no hay productos para mostrar</h3>
+            <p>Prueba otra categoría para descubrir más equipo.</p>
+            {% if active_product_category != 'Todos' %}
+              <a class="empty-state-link" href="{{ url_for('index', categoria=active_category) }}">Ver toda la sección <span aria-hidden="true">→</span></a>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+

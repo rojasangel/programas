@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Misión, visión y código ético | FR BEISSHOP{% endblock %}
+{% block content %}
+<section class="identity-page section-wrap" aria-labelledby="identity-title">
+  <header class="identity-heading">
+    <p class="eyebrow eyebrow-dark">FR BEISSHOP / NOSOTROS</p>
+    <h1 id="identity-title">Misión, visión y código ético</h1>
+  </header>
+  {% include 'partials/identity_panel.html' %}
+</section>
+<script src="{{ url_for('static', filename='identity-panel.js', v='identity-tabs1') }}" defer></script>
+{% endblock %}
+

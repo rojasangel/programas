@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Pedido listo | FR BEISSHOP{% endblock %}
+{% block content %}
+<section class="order-ready section-wrap">
+  <span class="ready-mark" aria-hidden="true">&#10003;</span>
+  <p class="eyebrow eyebrow-dark">PEDIDO PREPARADO</p>
+  <h1>Ya casi es tuyo.</h1>
+  <p class="order-number">Pedido #{{ order_id }}</p>
+  {% if order_lines %}
+    <div class="order-ready-items" aria-label="Resumen de tu pedido">
+      {% for line in order_lines %}
+        <div class="order-ready-item">
+          {% if line.custom_image %}<img src="{{ url_for('static', filename='uploads/custom-bats/' ~ line.custom_image) }}" alt="Vista previa de {{ line.name }}" loading="lazy" onerror="this.hidden=true;">{% endif %}
+          <div><strong>{{ line.quantity }} &times; {{ line.name }}</strong>{% if line.customizations %}<small>{% for label, value in line.customizations.items() %}{% if not loop.first %} &middot; {% endif %}{{ label }}: {{ value }}{% endfor %}</small>{% endif %}</div>
+          <b>{{ line.subtotal|mxn }} MXN</b>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+  <p>Tu pedido qued&oacute; registrado y el pago fue procesado. Prepararemos tu compra para la entrega indicada.</p>
+  <p class="delivery-confirmation"><strong>Pago elegido:</strong> {{ payment_method|default('whatsapp')|capitalize }}.{% if payment_confirmed %} Pago confirmado por Stripe.{% endif %} Te enviaremos la confirmaci&oacute;n a {{ customer_email }}.</p>
+  {% if is_local_delivery %}
+    <p class="delivery-confirmation"><strong>Entrega personal solicitada para Mexicali.</strong> Confirmaremos contigo el horario y el punto de entrega el mismo día.</p>
+  {% else %}
+    <p class="delivery-confirmation"><strong>Env&iacute;o a domicilio.</strong> Costo exacto aplicado: <strong>{{ shipping_fee|default(0)|mxn }} MXN</strong>{% if shipping_carrier %} con {{ shipping_carrier }}{% endif %}. {% if shipping_label_url %}La gu&iacute;a ya fue generada y est&aacute; disponible abajo.{% else %}La gu&iacute;a se est&aacute; generando; te enviaremos el enlace por correo cuando est&eacute; lista.{% endif %}</p>
+  {% endif %}
+  {% if whatsapp_url %}
+    <a class="button button-dark" href="{{ whatsapp_url }}" target="_blank" rel="noopener noreferrer">Enviar pedido por WhatsApp <span aria-hidden="true">&#8599;</span></a>
+  {% else %}
+    <p class="admin-empty-state">Configura el n&uacute;mero de WhatsApp de la tienda para habilitar el env&iacute;o directo.</p>
+  {% endif %}
+  {% if payment_url %}
+    <a class="button button-light" href="{{ payment_url }}" target="_blank" rel="noopener noreferrer">Continuar con Stripe <span aria-hidden="true">&#8599;</span></a>
+  {% endif %}
+  {% if shipping_label_url %}
+    <a class="button button-light" href="{{ shipping_label_url }}" target="_blank" rel="noopener noreferrer">Descargar gu&iacute;a de env&iacute;o <span aria-hidden="true">&#8599;</span></a>
+  {% endif %}
+  {% if current_user %}
+    <a class="button button-light" href="{{ url_for('account') }}">Ver mis pedidos</a>
+  {% endif %}
+  <a class="back-link" href="{{ url_for('index') }}">Volver a la tienda</a>
+</section>
+{% endblock %}
+

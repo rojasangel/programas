@@ -1,0 +1,310 @@
+{% extends "base.html" %}
+{% block title %}{{ product.name }} | FR BEISSHOP{% endblock %}
+{% block meta_description %}<meta name="description" content="{{ product.description|striptags|truncate(155, True, '...') }}">{% endblock %}
+{% block social_meta %}
+  <meta property="og:type" content="product">
+  <meta property="og:site_name" content="FR BEISSHOP">
+  <meta property="og:title" content="{{ product.name }} | FR BEISSHOP">
+  <meta property="og:description" content="{{ product.description|striptags|truncate(155, True, '...') }}">
+  <meta property="og:url" content="{{ request.base_url }}">
+  <meta property="og:image" content="{{ product.image if product.image.startswith('http') else request.url_root.rstrip('/') ~ product.image }}">
+  <meta name="twitter:card" content="summary_large_image">
+{% endblock %}
+{% block content %}
+<section class="product-detail section-wrap">
+  <a class="back-link" href="{{ url_for('index') }}">← Volver a la tienda</a>
+  <div class="product-detail-layout{% if product.get('wood_colors') %} product-detail-layout-custom-bat{% endif %}">
+    {% set colorable_bat = product.get('wood_colors') %}
+    {% set product_images = product.get('images') or [product.image] %}
+    {% set bat_photos = product_images|reject('equalto', product.image)|list %}
+    {% set bat_views = product.get('bat_views') or {} %}
+    <div class="product-detail-media">
+      <div class="product-detail-image{% if product.image == '/static/bat-transition.png' %} product-detail-image-contain{% endif %}{% if colorable_bat %} bat-preview{% endif %}"{% if colorable_bat %} id="bat-preview-frame" data-bat-3d{% endif %} data-gallery-main>
+        <img{% if colorable_bat %} data-bat-source{% endif %} src="{{ product.image }}" alt="{{ product.name }}" data-gallery-main-image onerror="this.onerror=null;this.src='{{ url_for('static', filename='logo.png') }}';">
+        {% if colorable_bat %}
+          <canvas class="bat-color-preview" data-bat-preview data-bat-drop-weight="{{ product.get('bat_weight', '-3') }}" role="img" aria-label="Bat personalizado"></canvas>
+          <canvas class="bat-engraving-preview" data-bat-engraving-preview role="img" aria-label="Acercamiento al grabado de tu bat personalizado" hidden></canvas>
+          <canvas class="bat-logo-preview" data-bat-logo-preview role="img" aria-label="Acercamiento al logo de tu bat personalizado" hidden></canvas>
+          <canvas class="bat-handle-preview" data-bat-handle-preview role="img" aria-label="Acercamiento a la punta del mango de tu bat personalizado" hidden></canvas>
+          <canvas class="bat-base-preview" data-bat-base-preview role="img" aria-label="Base del mango del mismo bat personalizado" hidden></canvas>
+          <img class="bat-custom-logo-asset" data-bat-logo src="{{ url_for('static', filename='monograma-fr-metalico.png') }}" alt="" aria-hidden="true" hidden>
+          {% if bat_photos or bat_views %}<img class="bat-reference-photo" data-bat-reference-photo src="{{ bat_photos[0] if bat_photos else (bat_views.values()|list|first) }}" alt="{{ product.name }} terminado" decoding="async" hidden>{% endif %}
+          <div class="bat-preview-label" aria-hidden="true"><span>FR CUSTOM</span><span data-bat-view-label>Tu diseño</span></div>
+        {% endif %}
+      </div>
+      {% if colorable_bat %}
+        <div class="bat-view-gallery" role="group" aria-label="Vistas del bat">
+          <button class="bat-view-button is-selected" type="button" data-bat-view="design" aria-controls="bat-preview-frame" aria-pressed="true">
+            <span class="bat-view-thumbnail"><canvas data-bat-view-thumbnail aria-hidden="true"></canvas></span>
+            <span>Tu diseño</span>
+          </button>
+          {% if bat_views.get('engraving') %}
+            <button class="bat-view-button" type="button" data-bat-view="photo" data-bat-photo-url="{{ bat_views.get('engraving') }}" data-bat-photo-label="Letras de cerca" data-bat-photo-caption="Foto personalizada de las letras del bat." aria-controls="bat-preview-frame" aria-pressed="false"><span class="bat-view-thumbnail"><img src="{{ bat_views.get('engraving') }}" alt="Letras de cerca" loading="lazy"></span><span>Letras de cerca</span></button>
+          {% else %}
+            <button class="bat-view-button" type="button" data-bat-view="engraving" aria-controls="bat-preview-frame" aria-pressed="false"><span class="bat-view-thumbnail"><canvas data-bat-engraving-thumbnail aria-hidden="true"></canvas></span><span>Letras de cerca</span></button>
+          {% endif %}
+          {% if bat_views.get('logo') %}
+            <button class="bat-view-button" type="button" data-bat-view="photo" data-bat-photo-url="{{ bat_views.get('logo') }}" data-bat-photo-label="Marca de cerca" data-bat-photo-caption="Foto personalizada de la marca del bat." aria-controls="bat-preview-frame" aria-pressed="false"><span class="bat-view-thumbnail"><img src="{{ bat_views.get('logo') }}" alt="Marca de cerca" loading="lazy"></span><span>Marca de cerca</span></button>
+          {% else %}
+            <button class="bat-view-button" type="button" data-bat-view="logo" aria-controls="bat-preview-frame" aria-pressed="false"><span class="bat-view-thumbnail"><canvas data-bat-logo-thumbnail aria-hidden="true"></canvas></span><span>Marca de cerca</span></button>
+          {% endif %}
+          {% if bat_views.get('handle') %}
+            <button class="bat-view-button" type="button" data-bat-view="photo" data-bat-photo-url="{{ bat_views.get('handle') }}" data-bat-photo-label="Punta del mango" data-bat-photo-caption="Foto personalizada de la punta del mango." aria-controls="bat-preview-frame" aria-pressed="false"><span class="bat-view-thumbnail"><img src="{{ bat_views.get('handle') }}" alt="Punta del mango" loading="lazy"></span><span>Punta del mango</span></button>
+          {% else %}
+            <button class="bat-view-button" type="button" data-bat-view="handle" aria-controls="bat-preview-frame" aria-pressed="false"><span class="bat-view-thumbnail"><canvas data-bat-handle-thumbnail aria-hidden="true"></canvas></span><span>Punta del mango</span></button>
+          {% endif %}
+          {% if bat_views.get('base') %}
+            <button class="bat-view-button" type="button" data-bat-view="photo" data-bat-photo-url="{{ bat_views.get('base') }}" data-bat-photo-label="Base del mango" data-bat-photo-caption="Foto personalizada de la base del mango." aria-controls="bat-preview-frame" aria-pressed="false"><span class="bat-view-thumbnail"><img src="{{ bat_views.get('base') }}" alt="Base del mango" loading="lazy"></span><span>Base del mango</span></button>
+          {% else %}
+            <button class="bat-view-button" type="button" data-bat-view="base" aria-controls="bat-preview-frame" aria-pressed="false"><span class="bat-view-thumbnail"><canvas data-bat-base-thumbnail aria-hidden="true"></canvas></span><span>Base del mango</span></button>
+          {% endif %}
+          {% for image in bat_photos[:1] %}
+            {% set photo_label = 'Bat terminado' %}
+            <button class="bat-view-button" type="button" data-bat-view="photo" data-bat-photo-url="{{ image }}" data-bat-photo-label="{{ photo_label }}" aria-controls="bat-preview-frame" aria-pressed="false">
+              <span class="bat-view-thumbnail"><img src="{{ image }}" alt="{{ product.name }} · {{ photo_label }}" loading="lazy" decoding="async"></span>
+              <span>{{ photo_label }}</span>
+            </button>
+          {% endfor %}
+        </div>
+        <p class="bat-photo-caption" data-bat-photo-caption aria-live="polite" hidden>Foto de un bat terminado. Selecciona “Tu diseño” para ver los colores y el grabado que elegiste.</p>
+      {% endif %}
+      {% if product_images|length > 1 and not colorable_bat %}
+        <div class="product-image-thumbnails" role="list" aria-label="Imágenes del producto">
+          {% for image in product_images %}
+            <button class="product-image-thumbnail{% if loop.first %} is-selected{% endif %}" type="button" data-gallery-thumbnail data-gallery-image="{{ image }}" data-gallery-alt="{{ product.name }} · imagen {{ loop.index }}" aria-label="Ver imagen {{ loop.index }}" aria-pressed="{{ 'true' if loop.first else 'false' }}">
+              <img src="{{ image }}" alt="" loading="lazy" onerror="this.onerror=null;this.src='{{ url_for('static', filename='logo.png') }}';">
+            </button>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+    <div class="product-detail-copy">
+      <p class="eyebrow eyebrow-dark">{{ product.category }} · {{ product.get('sections', [product.section])|map('section_label')|join(' y ') }}</p>
+      <h1>{{ product.name }}</h1>
+      <p class="product-detail-description">{{ product.description }}</p>
+      {% if product.bat_measure and product.bat_weight %}
+        <p class="product-specs">Medida: {{ product.bat_measure }} pulgadas · Peso: {{ product.bat_weight }}</p>
+      {% endif %}
+      {% if product.glove_measure %}
+        <p class="product-specs">Medida del guante: {{ product.glove_measure }}</p>
+      {% endif %}
+      {% if product.guantaleta_size %}
+        <p class="product-specs">Talla de la guantaleta: {{ product.guantaleta_size }}</p>
+      {% endif %}
+      {% if product.grip_thickness %}
+        <p class="product-specs">Grosor: {{ product.grip_thickness }}</p>
+      {% endif %}
+      {% if product.get('stock', 0) > 0 and product.get('stock', 0) <= 3 %}
+        <p class="product-stock-warning">Quedan pocas unidades: {{ product.stock }} disponibles.</p>
+      {% endif %}
+      {% if product.get('price_on_request') %}
+        <div class="price-request-panel"><strong>Producto bajo consulta</strong><p>Este art&iacute;culo se cotiza de forma personalizada. Escr&iacute;benos para conocer el precio.</p></div>
+      {% else %}
+      <form action="{{ url_for('add_to_cart', product_id=product.id) }}" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        {% if product.customizable %}
+          <fieldset class="customization-fields">
+            <legend>Personaliza tu bat</legend>
+            {% if colorable_bat %}<input type="hidden" name="bat_preview_image" data-bat-preview-data>{% endif %}
+            {% if colorable_bat %}<p class="customization-intro">Elige medida, acabados y personalizaci&oacute;n. La vista previa se actualiza al instante.</p>{% endif %}
+            <label>Medida
+              <select name="medida" required>
+                {% for measure in bat_measures %}<option value="{{ measure }}">{{ measure }} pulgadas</option>{% endfor %}
+              </select>
+            </label>
+            {% if product.get('wood_colors') %}
+              <div class="color-choice">
+                <span class="color-choice-title">Color principal</span>
+                <div class="color-swatches" role="radiogroup" aria-label="Color principal del bat">
+                  {% for color in product.wood_colors %}
+                    <button type="button" class="color-swatch{% if color == product.get('default_wood_color', 'Negro') %} is-selected{% endif %}" data-color-swatch data-color-value="{{ color }}" data-color-target="color_bat" aria-pressed="{{ 'true' if color == product.get('default_wood_color', 'Negro') else 'false' }}">
+                      <span class="color-swatch-dot" aria-hidden="true"></span>{{ color }}
+                    </button>
+                  {% endfor %}
+                </div>
+                <select class="color-choice-select" name="color_bat" required aria-label="Color principal del bat">
+                  {% for color in product.wood_colors %}<option value="{{ color }}"{% if color == product.get('default_wood_color', 'Negro') %} selected{% endif %}>{{ color }}</option>{% endfor %}
+                </select>
+              </div>
+              <div class="color-choice">
+                <span class="color-choice-title">Color del mango</span>
+                <div class="color-swatches" role="radiogroup" aria-label="Color del mango del bat">
+                  {% for color in product.wood_colors %}
+                    <button type="button" class="color-swatch{% if loop.first %} is-selected{% endif %}" data-color-swatch data-color-value="{{ color }}" data-color-target="color_bat_handle" aria-pressed="{{ 'true' if loop.first else 'false' }}">
+                      <span class="color-swatch-dot" aria-hidden="true"></span>{{ color }}
+                    </button>
+                  {% endfor %}
+                </div>
+                <select class="color-choice-select" name="color_bat_handle" required aria-label="Color del mango del bat">
+                  {% for color in product.wood_colors %}<option value="{{ color }}"{% if color == product.get('default_handle_color') %} selected{% endif %}>{{ color }}</option>{% endfor %}
+                </select>
+              </div>
+            {% endif %}
+            <div class="color-choice color-choice-grip">
+              <div class="grip-choice-heading">
+                <label class="grip-toggle">
+                  <input type="checkbox" name="usar_grip" value="1" data-grip-enabled>
+                  <span>Agregar grip</span>
+                </label>
+              </div>
+              <div class="grip-color-options" data-grip-options>
+                <span class="color-choice-title">Color del grip</span>
+                <div class="color-swatches" role="radiogroup" aria-label="Color del grip">
+                  {% for color in custom_grip_colors %}
+                    <button type="button" class="color-swatch{% if loop.first %} is-selected{% endif %}" data-grip-swatch data-color-value="{{ color }}" aria-pressed="{{ 'true' if loop.first else 'false' }}">
+                      <span class="color-swatch-dot" aria-hidden="true"></span>{{ color }}
+                    </button>
+                  {% endfor %}
+                </div>
+                <select class="color-choice-select" name="color_grip" aria-label="Color del grip">
+                  {% for color in custom_grip_colors %}<option value="{{ color }}">{{ color }}</option>{% endfor %}
+                </select>
+              </div>
+            </div>
+            <label>Nombre para personalizar <small>Opcional, m&aacute;ximo 18 caracteres</small>
+              <input name="nombre_personalizado" type="text" maxlength="18" autocomplete="off" placeholder="Ej. A. Garc&iacute;a">
+            </label>
+            <label>N&uacute;mero <small>Opcional, hasta 2 d&iacute;gitos</small>
+              <input name="numero" type="text" inputmode="numeric" pattern="[0-9]{1,2}" maxlength="2" placeholder="Ej. 24">
+            </label>
+            <div class="color-choice color-choice-logo">
+              <span class="color-choice-title">Color del logo</span>
+              <div class="color-swatches" role="radiogroup" aria-label="Color del logo">
+                {% for color in ['Blanco', 'Plateado', 'Dorado', 'Negro'] %}
+                  <button type="button" class="color-swatch{% if color == 'Blanco' %} is-selected{% endif %}" data-color-swatch data-color-value="{{ color }}" data-color-target="logo_color" aria-pressed="{{ 'true' if color == 'Blanco' else 'false' }}">
+                    <span class="color-swatch-dot" aria-hidden="true"></span>{{ color }}
+                  </button>
+                {% endfor %}
+              </div>
+              <select class="color-choice-select" name="logo_color" aria-label="Color del logo">
+                <option value="Blanco" selected>Blanco</option>
+                <option value="Plateado">Plateado</option>
+                <option value="Dorado">Dorado</option>
+                <option value="Negro">Negro</option>
+              </select>
+            </div>
+            <p class="customization-note">La personalizaci&oacute;n se agrega directamente a tu pedido.</p>
+          </fieldset>
+        {% endif %}
+        <strong class="product-detail-price">{{ product.price|mxn }} <small>MXN</small></strong>
+        <div class="product-action-row">
+          <button class="button button-dark" type="submit">Agregar al carrito <span aria-hidden="true">+</span></button>
+          <button class="button button-light product-share-button" type="button" data-share-product="{{ product.name }}">Compartir</button>
+        </div>
+        <p class="product-trust-strip"><span>Pago seguro con Stripe</span><span>Envíos desde Mexicali</span><a href="{{ url_for('contact_page') }}">¿Dudas? Escríbenos</a></p>
+      </form>
+      {% endif %}
+    </div>
+  </div>
+</section>
+<section class="product-reviews section-wrap" id="resenas">
+  <div class="product-reviews-heading">
+    <div>
+      <p class="eyebrow eyebrow-dark">OPINIONES DE LA COMUNIDAD</p>
+      <h2>Lo que dicen quienes ya compraron</h2>
+    </div>
+    <div class="product-review-summary" aria-label="Calificaci&oacute;n promedio">
+      <strong>{% if review_average %}{{ '%.1f'|format(review_average) }}{% else %}Nuevo{% endif %}</strong>
+      {% if review_average %}<span class="review-stars" aria-hidden="true">{% for index in range(5) %}{% if index < review_average|round(0, 'floor')|int %}★{% else %}☆{% endif %}{% endfor %}</span>{% endif %}
+      <small>{{ reviews|length }} rese&ntilde;a{% if reviews|length != 1 %}s{% endif %}</small>
+    </div>
+  </div>
+  <div class="product-reviews-grid">
+    <div class="product-review-list">
+      {% if reviews %}
+        {% for review in reviews %}
+          <article class="product-review-card">
+            <div class="product-review-card-top"><strong>{{ review.reviewer_name }}</strong><span class="review-stars" aria-label="{{ review.rating }} de 5 estrellas">{% for index in range(5) %}{% if index < review.rating %}★{% else %}☆{% endif %}{% endfor %}</span></div>
+            {% if review.title %}<h3>{{ review.title }}</h3>{% endif %}
+            <p>{{ review.body }}</p>
+            <small>{{ review.created_at[:10] }}</small>
+          </article>
+        {% endfor %}
+      {% else %}
+        <div class="product-review-empty"><strong>S&eacute; el primero en compartir tu experiencia.</strong><span>Tu opini&oacute;n ayuda a otros deportistas a elegir mejor.</span></div>
+      {% endif %}
+    </div>
+    <aside class="product-review-form-card">
+      {% if current_user %}
+        <h3>Deja tu rese&ntilde;a</h3>
+        <p>Cu&eacute;ntale a la comunidad qu&eacute; te pareci&oacute; este producto.</p>
+        <form action="{{ url_for('create_product_review', product_id=product.id) }}" method="post">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <label>Calificaci&oacute;n
+            <select name="calificacion" required>
+              <option value="">Selecciona estrellas</option>
+              <option value="5">5 estrellas — Excelente</option>
+              <option value="4">4 estrellas — Muy bueno</option>
+              <option value="3">3 estrellas — Bueno</option>
+              <option value="2">2 estrellas — Puede mejorar</option>
+              <option value="1">1 estrella — No lo recomiendo</option>
+            </select>
+          </label>
+          <label>T&iacute;tulo (opcional)<input name="titulo" maxlength="100" placeholder="Mi experiencia"></label>
+          <label>Comentario<textarea name="comentario" rows="4" minlength="10" maxlength="1200" required placeholder="Escribe al menos 10 caracteres..."></textarea></label>
+          <button class="button button-dark button-full" type="submit">Publicar rese&ntilde;a</button>
+        </form>
+      {% else %}
+        <h3>&iquest;Ya compraste este producto?</h3>
+        <p>Inicia sesi&oacute;n para compartir tu experiencia y ayudar a otros jugadores.</p>
+        <a class="button button-dark button-full" href="{{ url_for('login', next=request.path ~ '#resenas') }}">Iniciar sesi&oacute;n</a>
+      {% endif %}
+    </aside>
+  </div>
+</section>
+{% if colorable_bat %}
+  <script src="{{ url_for('static', filename='color-swatches.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='bat-customizer.js', v='bat-original-base-11') }}" defer></script>
+{% elif product.customizable %}
+  <script src="{{ url_for('static', filename='color-swatches.js') }}" defer></script>
+{% endif %}
+{% if product_images|length > 1 and not colorable_bat %}
+  <script src="{{ url_for('static', filename='product-gallery.js') }}" defer></script>
+{% endif %}
+<script>
+  (() => {
+    const button = document.querySelector('[data-share-product]');
+    if (!button) return;
+    button.addEventListener('click', async () => {
+      const data = {title: button.dataset.shareProduct, text: 'Mira este producto de FR BEISSHOP', url: window.location.href};
+      try {
+        if (navigator.share) await navigator.share(data);
+        else {
+          if (navigator.clipboard && window.isSecureContext) await navigator.clipboard.writeText(window.location.href);
+          else {
+            const helper = document.createElement('textarea');
+            helper.value = window.location.href;
+            helper.style.position = 'fixed';
+            helper.style.opacity = '0';
+            document.body.appendChild(helper);
+            helper.select();
+            document.execCommand('copy');
+            helper.remove();
+          }
+          const original = button.textContent;
+          button.textContent = 'Enlace copiado';
+          window.setTimeout(() => { button.textContent = original; }, 1800);
+        }
+      } catch (error) { /* El usuario canceló el diálogo de compartir. */ }
+    });
+  })();
+</script>
+{% set product_schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  'name': product.name,
+  'description': product.description,
+  'image': [request.url_root.rstrip('/') ~ product.image],
+  'offers': {
+    '@type': 'Offer',
+    'priceCurrency': 'MXN',
+    'price': product.price,
+    'availability': 'https://schema.org/InStock' if product.get('stock', 0) > 0 else 'https://schema.org/OutOfStock',
+    'url': request.base_url
+  }
+} %}
+<script type="application/ld+json">{{ product_schema|tojson }}</script>
+{% endblock %}
+
+
+

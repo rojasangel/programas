@@ -1,0 +1,300 @@
+{% extends "base.html" %}
+{% block title %}Editar producto | FR BEISSHOP{% endblock %}
+{% block content %}
+<section class="admin-page section-wrap admin-login">
+  <p class="eyebrow eyebrow-dark">FR BEISSHOP / ADMINISTRACIÓN</p>
+  <h1>Editar producto</h1>
+  <div class="admin-product-edit-preview">
+    <img src="{{ product.image }}" alt="Imagen actual de {{ product.name }}" onerror="this.onerror=null;this.src='{{ url_for('static', filename='logo.png') }}';">
+    <div>
+      <span>Imagen actual</span>
+      <strong>{{ product.name }}</strong>
+    <small>Selecciona una o varias imágenes para reemplazar la galería actual.</small>
+    </div>
+  </div>
+  {% if product.get('images') %}
+    <div class="admin-edit-image-list" aria-label="Imágenes actuales del producto">
+      {% for image in product.images %}
+        <div class="admin-edit-image-item"><img src="{{ image }}" alt="Foto guardada {{ loop.index }} de {{ product.name }}" loading="lazy" onerror="this.onerror=null;this.src='{{ url_for('static', filename='logo.png') }}';"><span>Foto guardada {{ loop.index }}</span></div>
+      {% endfor %}
+    </div>
+  {% endif %}
+  <form class="admin-form admin-product-form" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <section class="admin-product-gallery-editor" aria-labelledby="admin-gallery-title">
+    <div class="admin-gallery-heading">
+      <div>
+        <span>GALERÍA DEL PRODUCTO</span>
+        <h2 id="admin-gallery-title">Fotos guardadas</h2>
+        <p>Marca las fotos que quieras quitar. Se pedirá confirmación antes de guardar.</p>
+      </div>
+      <strong>{{ product.get('images')|length }} foto{% if product.get('images')|length != 1 %}s{% endif %}</strong>
+    </div>
+      <div class="admin-edit-image-list admin-edit-image-list-manage" data-gallery-sortable aria-label="Fotos disponibles del producto">
+        {% for image in gallery_images %}
+          {% set is_current_image = image in (product.get('images') or []) %}
+          <div class="admin-edit-image-item admin-edit-image-choice{% if not is_current_image %} is-available{% endif %}" draggable="true" data-gallery-item>
+            <label>
+              <input type="checkbox" name="galeria_imagenes" value="{{ image }}" data-gallery-include{% if is_current_image %} data-current="1" checked{% endif %}>
+              <span class="admin-edit-image-thumb"><img src="{{ image }}" alt="Foto {{ loop.index }} de {{ product.name }}" loading="lazy" onerror="this.onerror=null;this.src='{{ url_for('static', filename='logo.png') }}';"></span>
+              <span class="admin-edit-image-caption">{% if is_current_image %}Foto incluida {{ loop.index }}{% else %}Foto disponible{% endif %}</span>
+              <span class="admin-edit-image-delete">{% if is_current_image %}Quitar{% else %}Agregar{% endif %}</span>
+            </label>
+            <div class="admin-edit-image-move" aria-label="Cambiar orden">
+              <button type="button" data-gallery-move="up" title="Mover arriba">↑</button>
+              <button type="button" data-gallery-move="down" title="Mover abajo">↓</button>
+            </div>
+          </div>
+      {% endfor %}
+    </div>
+      <small class="admin-gallery-help">Marca las que quieras mostrar y usa ↑/↓ para cambiar su orden. Debes conservar al menos una foto. Las nuevas se agregarán al final.</small>
+  </section>
+    {% if product.get('customizable') and bat_view_labels %}
+      <section class="admin-bat-view-editor" aria-labelledby="admin-bat-views-title">
+        <div class="admin-bat-view-heading">
+          <div><span>PERSONALIZADOR</span><h2 id="admin-bat-views-title">Vistas del bat</h2><p>Administra las fotos que aparecen en las vistas de cerca. Si no agregas una foto, se conservar&aacute; la vista generada autom&aacute;ticamente.</p></div>
+        </div>
+        <div class="admin-bat-view-grid">
+          {% for view_key, view_label in bat_view_labels.items() %}
+            {% set current_view = (product.get('bat_views') or {}).get(view_key, '') %}
+            <div class="admin-bat-view-card">
+              <div class="admin-bat-view-preview">{% if current_view %}<img src="{{ current_view }}" alt="{{ view_label }} actual" loading="lazy" onerror="this.onerror=null;this.src='{{ url_for('static', filename='logo.png') }}';">{% else %}<span>Vista generada</span>{% endif %}</div>
+              <strong>{{ view_label }}</strong>
+            <label>Usar foto ya guardada
+              <select name="bat_view_existing_{{ view_key }}">
+                <option value="">No seleccionar</option>
+                {% for image in product.get('images') or [] %}<option value="{{ image }}"{% if current_view == image %} selected{% endif %}>Foto guardada {{ loop.index }}</option>{% endfor %}
+              </select>
+            </label>
+              <label>Subir foto
+                <input name="bat_view_{{ view_key }}" type="file" accept="image/jpeg,image/png,image/webp">
+              </label>
+              {% if current_view %}<label class="admin-checkbox"><input type="checkbox" name="eliminar_bat_view_{{ view_key }}" value="1"> Quitar foto personalizada</label>{% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
+    <div class="admin-fields">
+      <label>Categoría
+        <select id="categoria-producto" name="categoria" required>
+          {% for category in categories %}<option value="{{ category }}" {% if product.category == category %}selected{% endif %}>{{ category }}</option>{% endfor %}
+        </select>
+      </label>
+      <label id="destino-unico">¿Dónde aparecerá el producto?
+        <select id="seccion-producto" name="seccion" required>
+          {% for section in sections %}<option value="{{ section }}" {% if product.section == section %}selected{% endif %}>{{ section|section_label }}</option>{% endfor %}
+        </select>
+      </label>
+      <div id="destinos-grip" class="admin-wide" hidden>
+        <p class="admin-choice-heading">Este artículo aparecerá en:</p>
+        {% for section in sections %}
+          <label class="admin-checkbox"><input type="checkbox" name="secciones" value="{{ section }}" {% if section in selected_product_sections %}checked{% endif %}> {{ section|section_label }}</label>
+        {% endfor %}
+      </div>
+      <label>Nombre del artículo
+        <input name="nombre" value="{{ product.name }}" required>
+      </label>
+      <div id="opciones-guante" class="admin-wide" hidden>
+        <label>Medida del guante
+          <select id="medida-guante" name="medida" required disabled>
+            <option value="">Selecciona una medida</option>
+            {% for measure in glove_measures %}<option value="{{ measure }}" {% if product.glove_measure|string == measure %}selected{% endif %}>{{ measure }} pulgadas</option>{% endfor %}
+          </select>
+        </label>
+      </div>
+      <div id="opciones-guantaleta" class="admin-wide" hidden>
+        <label>Talla de la guantaleta
+          <select id="talla-guantaleta" name="talla" required disabled>
+            <option value="">Selecciona una talla</option>
+            {% for size in guantaleta_sizes %}<option value="{{ size }}" {% if product.guantaleta_size == size %}selected{% endif %}>{{ size }}</option>{% endfor %}
+          </select>
+        </label>
+      </div>
+      <div id="opciones-grip" class="admin-wide" hidden>
+        <label>Grosor
+          <select id="grosor-grip" name="grosor" required disabled>
+            <option value="">Selecciona un grosor</option>
+            {% for thickness in grip_thicknesses %}<option value="{{ thickness }}" {% if product.grip_thickness == thickness %}selected{% endif %}>{{ thickness }}</option>{% endfor %}
+          </select>
+        </label>
+      </div>
+      <div id="opciones-bat-beisbol" class="admin-fields admin-wide" hidden>
+        <label>Medida del bat
+          <select id="medida-bat" name="medida" data-saved-value="{{ product.bat_measure|default('', true) }}" required disabled>
+            <option value="">Selecciona una medida</option>
+          </select>
+        </label>
+        <label>Peso
+          <select id="peso-bat" name="peso" data-saved-value="{{ product.bat_weight|default('', true) }}" required disabled>
+            <option value="">Selecciona el peso</option>
+          </select>
+        </label>
+      </div>
+      <div id="opciones-personalizacion-bat" class="admin-fields admin-wide" hidden>
+        <label class="admin-checkbox admin-wide"><input type="checkbox" name="personalizable" value="1" {% if product.get('customizable') %}checked{% endif %}> Permitir personalización del bat</label>
+        <label>Colores del bat <span>(separados por comas)</span>
+          <input name="colores_bat" value="{{ (product.get('wood_colors') or ['Natural', 'Negro', 'Rojo', 'Azul', 'Rosa'])|join(',') }}" placeholder="Natural,Negro,Rojo,Azul,Rosa">
+        </label>
+        <label>Colores del grip <span>(separados por comas)</span>
+          <input name="colores_grip" value="{{ (product.get('custom_grip_colors') or ['Negro', 'Rojo', 'Azul', 'Blanco'])|join(',') }}" placeholder="Negro,Rojo,Azul,Blanco">
+        </label>
+      </div>
+      <label>Precio en MXN
+        <input name="precio" type="number" min="1" step="1" value="{{ product.price|int }}" required>
+      </label>
+      <label>Existencias
+        <input name="stock" type="number" min="0" step="1" value="{{ product.get('stock', 0) }}" required>
+      </label>
+      <div class="admin-fields admin-wide package-fields">
+        <p class="admin-choice-heading admin-wide">Datos del paquete para paquetería</p>
+        <label>Peso (kg)
+          <input name="peso_paquete" type="number" min="0.001" max="1000" step="0.001" value="{{ product.get('package_weight_kg', 0.5) }}" required>
+        </label>
+        <label>Largo (cm)
+          <input name="largo_paquete" type="number" min="0.01" max="500" step="0.01" value="{{ product.get('package_length_cm', 30) }}" required>
+        </label>
+        <label>Ancho (cm)
+          <input name="ancho_paquete" type="number" min="0.01" max="500" step="0.01" value="{{ product.get('package_width_cm', 20) }}" required>
+        </label>
+        <label>Alto (cm)
+          <input name="alto_paquete" type="number" min="0.01" max="500" step="0.01" value="{{ product.get('package_height_cm', 15) }}" required>
+        </label>
+      </div>
+      <label class="admin-wide">Descripción
+        <textarea name="descripcion" rows="3">{{ product.description }}</textarea>
+      </label>
+      <label class="admin-checkbox admin-wide"><input type="checkbox" name="mostrar_en_marca" value="1" {% if product.get('brand_featured') %}checked{% endif %}> Mostrar este producto en Nuestra marca</label>
+      <label class="admin-wide">Seleccionar imágenes desde la computadora <span>(JPG, PNG o WEBP; hasta 8 MB por imagen)</span>
+        <input name="imagen_archivo" type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple>
+        <small class="admin-file-help">Puedes seleccionar varias imágenes. La primera será la imagen principal.</small>
+      </label>
+    </div>
+    <div class="admin-form-actions">
+      <button class="button button-dark" type="submit">Guardar cambios</button>
+      <a class="admin-cancel" href="{{ url_for('admin') }}">Cancelar</a>
+    </div>
+  </form>
+</section>
+<script>
+  (() => {
+    const productForm = document.querySelector(".admin-product-form");
+    productForm?.addEventListener("submit", (event) => {
+      const selected = document.querySelectorAll('input[name="eliminar_imagen"]:checked');
+      if (!selected.length) return;
+      const count = selected.length;
+      const noun = count === 1 ? "foto" : "fotos";
+      if (!window.confirm(`¿Eliminar ${count} ${noun} de este producto? Esta acción quitará ${count === 1 ? "la foto" : "las fotos"} de su galería.`)) {
+        event.preventDefault();
+        return;
+      }
+      selected.forEach((checkbox) => {
+        const hidden = document.createElement("input");
+        hidden.type = "hidden";
+        hidden.name = "eliminar_imagen";
+        hidden.value = checkbox.value;
+        productForm.appendChild(hidden);
+      });
+    });
+    const gallery = document.querySelector("[data-gallery-sortable]");
+    let draggedGalleryItem = null;
+    gallery?.querySelectorAll("[data-gallery-item]").forEach((item) => {
+      item.addEventListener("dragstart", () => {
+        draggedGalleryItem = item;
+        item.classList.add("is-dragging");
+      });
+      item.addEventListener("dragend", () => {
+        item.classList.remove("is-dragging");
+        draggedGalleryItem = null;
+      });
+      item.addEventListener("dragover", (event) => event.preventDefault());
+      item.addEventListener("drop", (event) => {
+        event.preventDefault();
+        if (!draggedGalleryItem || draggedGalleryItem === item) return;
+        const before = event.clientY < item.getBoundingClientRect().top + item.offsetHeight / 2;
+        if (before) item.before(draggedGalleryItem);
+        else item.after(draggedGalleryItem);
+      });
+    });
+    gallery?.querySelectorAll("[data-gallery-move]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const item = button.closest("[data-gallery-item]");
+        if (!item) return;
+        const sibling = button.dataset.galleryMove === "up" ? item.previousElementSibling : item.nextElementSibling;
+        if (!sibling) return;
+        if (button.dataset.galleryMove === "up") sibling.before(item);
+        else sibling.after(item);
+      });
+    });
+    productForm?.addEventListener("submit", (event) => {
+      const removed = document.querySelectorAll('input[name="galeria_imagenes"][data-current="1"]:not(:checked)');
+      if (!removed.length) return;
+      const count = removed.length;
+      const noun = count === 1 ? "foto" : "fotos";
+      if (!window.confirm(`¿Quitar ${count} ${noun} de la galería?`)) event.preventDefault();
+    });
+    const category = document.getElementById("categoria-producto");
+    const section = document.getElementById("seccion-producto");
+    const uniqueDestination = document.getElementById("destino-unico");
+    const gripDestinations = document.getElementById("destinos-grip");
+    const gripDestinationFields = gripDestinations.querySelectorAll('input[name="secciones"]');
+    const gloveOptions = document.getElementById("opciones-guante");
+    const gloveMeasure = document.getElementById("medida-guante");
+    const guantaletaOptions = document.getElementById("opciones-guantaleta");
+    const guantaletaSize = document.getElementById("talla-guantaleta");
+    const gripOptions = document.getElementById("opciones-grip");
+    const gripThickness = document.getElementById("grosor-grip");
+    const batOptions = document.getElementById("opciones-bat-beisbol");
+    const customizationOptions = document.getElementById("opciones-personalizacion-bat");
+    const measureField = document.getElementById("medida-bat");
+    const weightField = document.getElementById("peso-bat");
+    const setOptions = (field, placeholder, values, restoreSaved = false) => {
+      const selected = field.value || (restoreSaved ? field.dataset.savedValue : "") || "";
+      field.replaceChildren(new Option(placeholder, ""));
+      values.forEach((value) => {
+        const label = field === measureField ? `${value} pulgadas` : value;
+        field.add(new Option(label, value));
+      });
+      field.value = values.includes(selected) ? selected : "";
+    };
+    let firstRender = true;
+    const updateBatOptions = () => {
+      const isGrip = category.value === "Grip";
+      uniqueDestination.hidden = isGrip;
+      section.disabled = isGrip;
+      gripDestinations.hidden = !isGrip;
+      gripDestinationFields.forEach((field) => {
+        field.disabled = !isGrip;
+      });
+      const showGloveOptions = category.value === "Guantes";
+      gloveOptions.hidden = !showGloveOptions;
+      gloveMeasure.disabled = !showGloveOptions;
+      const showGuantaletaOptions = category.value === "Guantaletas";
+      guantaletaOptions.hidden = !showGuantaletaOptions;
+      guantaletaSize.disabled = !showGuantaletaOptions;
+      gripOptions.hidden = !isGrip;
+      gripThickness.disabled = !isGrip;
+      const show = category.value === "Bat" && ["Béisbol", "Softball"].includes(section.value);
+      batOptions.hidden = !show;
+      customizationOptions.hidden = !show;
+      if (show) {
+        const measures = section.value === "Softball" ? ["34"] : ["32", "33", "33.5", "34"];
+        const weights = section.value === "Softball" ? ["-6", "-7", "-8", "-9", "-10"] : ["-3"];
+        setOptions(measureField, "Selecciona una medida", measures, firstRender);
+        setOptions(weightField, "Selecciona el peso", weights, firstRender);
+      }
+      batOptions.querySelectorAll("select").forEach((field) => {
+        field.disabled = !show;
+      });
+      customizationOptions.querySelectorAll("input").forEach((field) => {
+        field.disabled = !show;
+      });
+      firstRender = false;
+    };
+    category.addEventListener("change", updateBatOptions);
+    section.addEventListener("change", updateBatOptions);
+    updateBatOptions();
+  })();
+</script>
+{% endblock %}
+

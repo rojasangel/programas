@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block title %}Pedidos | FR BEISSHOP{% endblock %}
+{% block content %}
+<section class="admin-page section-wrap">
+  <div class="admin-heading">
+    <div>
+      <p class="eyebrow eyebrow-dark">FR BEISSHOP / ADMINISTRACIÓN / PEDIDOS</p>
+      <h1>Pedidos</h1>
+      <p class="admin-intro">Consulta los datos de entrega, pago y seguimiento de cada pedido.</p>
+    </div>
+    <div class="admin-heading-actions">
+      <a class="admin-action" href="{{ url_for('export_orders') }}">Exportar CSV</a>
+      <a class="admin-cancel" href="{{ url_for('admin_menu') }}">Volver al menú</a>
+    </div>
+  </div>
+
+  {% if orders %}
+    <div class="admin-order-filters" role="tablist" aria-label="Filtrar pedidos">
+      {% for status in order_statuses %}
+        {% set status_count = orders|length if status == 'Todos' else status_counts.get(status, 0) %}
+        <button type="button" class="admin-order-filter {% if loop.first %}is-active{% endif %}" data-order-filter="{{ status }}" aria-pressed="{{ 'true' if loop.first else 'false' }}">
+          {{ status }} <span>{{ status_count }}</span>
+        </button>
+      {% endfor %}
+    </div>
+    <div class="admin-orders-list">
+      {% for order in orders %}
+        <article class="admin-order-card" data-order-status="{{ order.status }}">
+          <div class="admin-order-heading">
+            <div>
+              <p class="eyebrow eyebrow-dark">PEDIDO #{{ order.id }}</p>
+              <h2>{{ order.customer_name }}</h2>
+              <small>{{ order.created_at }} · {{ order.city }}, {{ order.state }} · C.P. {{ order.postal_code }}</small>
+              <div class="admin-order-delivery">
+                {% if order.customer_email %}<span>{{ order.customer_email }}</span>{% endif %}
+                <span>{{ order.phone }}</span>
+                <span>{{ order.address }}, {{ order.neighborhood }}</span>
+                <strong>{% if order.delivery_method == 'local' %}Entrega personal · mismo día en Mexicali{% else %}Envío a domicilio{% endif %}</strong>
+                <strong>Pago: {{ order.payment_method|default('stripe')|capitalize }}</strong>
+                {% if order.discount %}<span>Descuento: -{{ order.discount|mxn }} MXN{% if order.coupon_code %} ({{ order.coupon_code }}){% endif %}</span>{% endif %}
+                {% if order.shipping_fee %}<span>Envío: {{ order.shipping_fee|mxn }} MXN</span>{% endif %}
+                {% if order.shipping_rate_id %}<span>Tarifa Skydropx: {{ order.shipping_rate_id }}{% if order.shipping_quote_id %} · Cotización {{ order.shipping_quote_id }}{% endif %}</span>{% endif %}
+                {% if order.tracking_number %}<span>Guía: {{ order.tracking_number }}{% if order.shipping_carrier %} · {{ order.shipping_carrier }}{% endif %}</span>{% endif %}
+                {% if order.shipping_label_url %}<a href="{{ order.shipping_label_url }}" target="_blank" rel="noopener noreferrer">Descargar guía</a>{% endif %}
+                {% if order.shipping_note %}<span>{{ order.shipping_note }}</span>{% endif %}
+              </div>
+            </div>
+            <strong>{{ order.total|mxn }} MXN</strong>
+          </div>
+          <ul class="admin-order-lines">
+            {% for line in order.lines %}
+              <li>
+                {% if line.custom_image %}
+                  <a class="admin-order-preview" href="{{ url_for('static', filename='uploads/custom-bats/' ~ line.custom_image) }}" target="_blank" rel="noopener noreferrer" aria-label="Abrir vista previa del bat personalizado">
+                    <img src="{{ url_for('static', filename='uploads/custom-bats/' ~ line.custom_image) }}" alt="Vista previa del bat personalizado" loading="lazy">
+                  </a>
+                {% endif %}
+                <span class="admin-order-line-copy">
+                  <span>{{ line.quantity }} x {{ line.name }}{% if line.customizable %}<b class="admin-custom-bat-badge">Personalizado</b>{% endif %}</span>
+                  {% if line.customizations %}
+                    <small>{% for label, value in line.customizations.items() %}{% if not loop.first %} · {% endif %}{{ label }}: {{ value }}{% endfor %}</small>
+                  {% endif %}
+                </span>
+                <strong>{{ line.subtotal|mxn }} MXN</strong>
+              </li>
+            {% endfor %}
+          </ul>
+          <form class="admin-order-status" action="{{ url_for('update_order_status', order_id=order.id) }}" method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <label>Estado
+              <select name="estado">
+                {% for status in ['Pago pendiente', 'Pagado', 'En preparación', 'Enviado', 'Completado', 'Cancelado', 'Reembolsado'] %}
+                  <option value="{{ status }}" {% if order.status == status %}selected{% endif %}>{{ status }}</option>
+                {% endfor %}
+              </select>
+            </label>
+            <label>Transportista
+              <input name="transportista" value="{{ order.shipping_carrier|default('', true) }}" placeholder="Ej. DHL, Estafeta">
+            </label>
+            <label>Número de guía
+              <input name="guia" value="{{ order.tracking_number|default('', true) }}" placeholder="Guía de envío">
+            </label>
+            <label>Nota de entrega
+              <input name="nota_envio" value="{{ order.shipping_note|default('', true) }}" placeholder="Horario o punto de entrega">
+            </label>
+            <button class="button button-dark" type="submit">Guardar estado</button>
+          </form>
+          {% if order.delivery_method != 'local' and order.status not in ['Pago pendiente', 'Cancelado', 'Reembolsado'] %}
+            <form class="admin-order-label-form" action="{{ url_for('create_order_shipping_label', order_id=order.id) }}" method="post">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button class="admin-action" type="submit">{% if order.shipping_label_url %}Regenerar guía{% else %}Crear guía con Skydropx{% endif %}</button>
+            </form>
+          {% endif %}
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="admin-empty-state">Todavía no hay pedidos registrados.</p>
+  {% endif %}
+</section>
+<script>
+  (() => {
+    const filters = [...document.querySelectorAll('[data-order-filter]')];
+    const cards = [...document.querySelectorAll('[data-order-status]')];
+    if (!filters.length || !cards.length) return;
+    filters.forEach((filter) => filter.addEventListener('click', () => {
+      const selected = filter.dataset.orderFilter;
+      filters.forEach((item) => {
+        const active = item === filter;
+        item.classList.toggle('is-active', active);
+        item.setAttribute('aria-pressed', active ? 'true' : 'false');
+      });
+      cards.forEach((card) => { card.hidden = selected !== 'Todos' && card.dataset.orderStatus !== selected; });
+    }));
+  })();
+</script>
+{% endblock %}
+
